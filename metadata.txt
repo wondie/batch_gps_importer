@@ -1,0 +1,23 @@
+[general]
+name=Batch GPS Importer
+qgisMinimumVersion=2.14
+description=A batch GPS to layer importer with the ability to filter features with geometry errors and restrict extent.
+version=0.1
+
+tags=GPS Import, GPX import, validate, batch GPS, batch GPX
+
+homepage=http://www.wondim.com/
+tracker=https://github.com/gltn/wondie/issues
+repository=https://github.com/wondie/batch_gps_importer
+icon=images/icon.png
+
+experimental=False
+
+author=Wondimagegn Tesfaye Beshah
+email=wondim81@gmail.com
+
+
+
+
+
+
