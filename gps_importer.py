@@ -1,8 +1,8 @@
-from collections import OrderedDict
 import os.path
-from PyQt4.QtCore import QSettings
+
 from PyQt4.QtCore import QUrl
 from PyQt4.QtGui import QApplication
+from PyQt4.QtGui import QCheckBox
 from PyQt4.QtGui import QCursor
 from PyQt4.QtGui import QDialog
 from PyQt4.QtGui import QDialogButtonBox
@@ -12,15 +12,11 @@ from PyQt4.QtGui import QPushButton
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform
 
 from .ui_gps_importer import Ui_BatchGpsImporter
-from .process_import import ParamStore, ProcessCombine
+from .process_import import (
+    ParamStore, ProcessCombine, GEOMETRY_TYPES
+)
 from . import DYNAMIC_HELP, HOME
 
-FEATURE_TYPES = OrderedDict([
-    (u'tracks', 'Track'), (u'waypoints', 'Waypoint'), (u'routes', 'Routes')
-])
-GEOMETRY_TYPES = OrderedDict([
-    ('Polygon', 'Polygon'), ('Point', 'Point'), ('Linestring', 'Line')
-])
 
 
 class GpsImporter(QDialog, Ui_BatchGpsImporter):
@@ -40,6 +36,10 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.input_projection_cbo.setCrs(
             QgsCoordinateReferenceSystem('EPSG:4326')
         )
+        self.waypoint.setProperty('name', 'waypoints')
+        self.track.setProperty('name', 'tracks')
+        self.route.setProperty('name', 'routes')
+        #print self.waypoint.property('name')
         self.extent_box.setChecked(False)
         self.canvas.extentsChanged.connect(self.update_extent_box)
         self.extent_box.clicked.connect(self.update_extent_box)
@@ -48,11 +48,18 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.help_events()
 
     def init_gui(self):
-        self.populate_feature_type()
         self.populate_geometry_type()
         self.rename_buttonbox()
         self.add_dynamic_help_button()
         self.hide_dynamic_help(on_load_hide=True)
+        self.hide_extent_buttons()
+
+    def hide_extent_buttons(self):
+        for button in self.extent_box.findChildren(QPushButton):
+            button.setHidden(True)
+            button.parent().setHidden(True)
+            button.deleteLater()
+            button.parent().deleteLater()
 
     def help_events(self):
         self.mousePressEvent = self.set_help_text
@@ -149,48 +156,49 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
 
     def update_progress(self, text):
         QApplication.processEvents()
+
         self.progress_text_edit.append(text)
+
     def prevent_collapse(self):
         self.extent_box.setCollapsed(False)
 
     def update_extent_box(self):
         if not self.extent_box.isChecked():
             return
-        canvas_extent = self.canvas.extent()
+        try:
+            canvas_extent = self.canvas.extent()
 
-        transformer = QgsCoordinateTransform(
-            self.canvas.mapRenderer().destinationCrs(),
-            self.input_projection_cbo.crs()
-        )
-        transformer.setDestCRS(
-            self.input_projection_cbo.crs()
-        )
-        transformed_extent = transformer.transform(canvas_extent)
-
-        self.extent_box.setOriginalExtent(
-            transformed_extent,
-            QgsCoordinateReferenceSystem(
-                self.input_projection_cbo.crs().authid()
+            transformer = QgsCoordinateTransform(
+                self.canvas.mapRenderer().destinationCrs(),
+                self.input_projection_cbo.crs()
             )
-        )
 
-        self.extent_box.setOutputCrs(
-            QgsCoordinateReferenceSystem(
-                self.input_projection_cbo.crs().authid()
+            transformer.setDestCRS(
+                self.input_projection_cbo.crs()
             )
-        )
-        self.extent_box.setOutputExtentFromOriginal()
-        self.extent_box.setCurrentExtent(
-            transformed_extent,
-            QgsCoordinateReferenceSystem(
-                self.input_projection_cbo.crs().authid()
-            )
-        )
+            transformed_extent = transformer.transform(canvas_extent)
 
-    def populate_feature_type(self):
-        self.input_format_cbo.addItem('', None)
-        for key, value in FEATURE_TYPES.iteritems():
-            self.input_format_cbo.addItem(value, key)
+            self.extent_box.setOriginalExtent(
+                transformed_extent,
+                QgsCoordinateReferenceSystem(
+                    self.input_projection_cbo.crs().authid()
+                )
+            )
+
+            self.extent_box.setOutputCrs(
+                QgsCoordinateReferenceSystem(
+                    self.input_projection_cbo.crs().authid()
+                )
+            )
+            self.extent_box.setOutputExtentFromOriginal()
+            self.extent_box.setCurrentExtent(
+                transformed_extent,
+                QgsCoordinateReferenceSystem(
+                    self.input_projection_cbo.crs().authid()
+                )
+            )
+        except Exception as ex:
+            print ex
 
     def populate_geometry_type(self):
         self.geometry_type_cbo.addItem('', None)
@@ -226,10 +234,13 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.param_store.geometry_type = self.geometry_type_cbo.itemData(
             self.geometry_type_cbo.currentIndex()
         )
+        feature_types = [
+            widget.property('name')
+            for widget in self.input_output_tab.findChildren(QCheckBox)
+            if widget.isChecked() and widget.property('name')
+        ]
 
-        self.param_store.feature_type = self.input_format_cbo.itemData(
-            self.input_format_cbo.currentIndex()
-        )
+        self.param_store.feature_types = feature_types
 
         epsg = self.input_projection_cbo.crs().authid()
         if len(epsg.split(':')) > 0:
@@ -245,17 +256,16 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.set_input_value()
         self.progress_text_edit.clear()
         start_text = QApplication.translate(
-            'GpsImporter','Started the importing process'
+            'GpsImporter',
+            '<html><b>Started the importing from {}</b></html>'.format(
+                self.param_store.input_path
+            )
         )
+
         self.progress_text_edit.append(start_text)
         self.tab_widget.setCurrentIndex(3)
-        self.tab_widget.setCurrentWidget(self.tab_4)
+        self.tab_widget.setCurrentWidget(self.log_tab)
         self.process = ProcessCombine(self.iface.mainWindow())
         self.process.progress.connect(self.update_progress)
         self.process.combine_layers(self.param_store)
-        end_text = QApplication.translate(
-            'GpsImporter',
-            'Successfully finished the importing process!'
-        )
-        self.progress_text_edit.append(end_text)
-        return
+
