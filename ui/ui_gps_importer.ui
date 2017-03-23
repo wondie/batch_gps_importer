@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>531</width>
-    <height>387</height>
+    <width>587</width>
+    <height>424</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
       <widget class="QTabWidget" name="tab_widget">
        <property name="minimumSize">
         <size>
-         <width>500</width>
+         <width>556</width>
          <height>0</height>
         </size>
        </property>
@@ -40,15 +40,32 @@
            <property name="verticalSpacing">
             <number>29</number>
            </property>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_3">
+           <item row="1" column="2">
+            <widget class="QRadioButton" name="no_scan_sub_folders_rbtn">
              <property name="text">
-              <string>Scan sub-folders</string>
+              <string>No</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1" colspan="2">
-            <widget class="QLineEdit" name="input_gpx_folder"/>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Projection</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1" colspan="3">
+            <widget class="QComboBox" name="geometry_type_cbo"/>
+           </item>
+           <item row="2" column="3">
+            <widget class="QCheckBox" name="route">
+             <property name="text">
+              <string>Route</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item row="0" column="3">
             <widget class="QPushButton" name="input_gpx_file_btn">
@@ -71,13 +88,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
-            <widget class="QRadioButton" name="no_scan_sub_folders_rbtn">
-             <property name="text">
-              <string>No</string>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="1">
             <widget class="QRadioButton" name="scan_sub_folders_rdb">
              <property name="text">
@@ -88,27 +98,17 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="label_6">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>Projection</string>
+              <string>Scan sub-folders</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="1" colspan="3">
-            <widget class="QComboBox" name="geometry_type_cbo"/>
+           <item row="0" column="1" colspan="2">
+            <widget class="QLineEdit" name="input_gpx_folder"/>
            </item>
-           <item row="2" column="3">
-            <widget class="QCheckBox" name="route">
-             <property name="text">
-              <string>Route</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1" colspan="3">
+           <item row="5" column="1" colspan="3">
             <widget class="QgsProjectionSelectionWidget" name="input_projection_cbo">
              <property name="maximumSize">
               <size>
@@ -118,13 +118,10 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="1" colspan="3">
-            <layout class="QVBoxLayout" name="notification_bar"/>
-           </item>
-           <item row="2" column="2">
-            <widget class="QCheckBox" name="waypoint">
+           <item row="2" column="1">
+            <widget class="QCheckBox" name="track">
              <property name="text">
-              <string>Waypoint</string>
+              <string>Track</string>
              </property>
              <property name="checked">
               <bool>true</bool>
@@ -138,13 +135,27 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QCheckBox" name="track">
+           <item row="2" column="2">
+            <widget class="QCheckBox" name="waypoint">
              <property name="text">
-              <string>Track</string>
+              <string>Waypoint</string>
              </property>
              <property name="checked">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1" colspan="3">
+            <widget class="QLineEdit" name="layer_name_edit">
+             <property name="maxLength">
+              <number>50</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Layer name</string>
              </property>
             </widget>
            </item>
@@ -159,48 +170,10 @@
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="5" column="1" colspan="2">
-            <widget class="QLineEdit" name="output_shp_file"/>
-           </item>
-           <item row="4" column="3">
-            <widget class="QPushButton" name="pushButton">
-             <property name="text">
-              <string>Browse...</string>
-             </property>
-            </widget>
+           <item row="6" column="1" colspan="2">
+            <widget class="QLineEdit" name="invalid_gpx_folder"/>
            </item>
            <item row="4" column="0">
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>Included folder</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1" colspan="2">
-            <widget class="QLineEdit" name="lineEdit"/>
-           </item>
-           <item row="5" column="3">
-            <widget class="QPushButton" name="output_shp_file_btn">
-             <property name="text">
-              <string>Browse...</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="label_10">
-             <property name="text">
-              <string>Excluded folder</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QRadioButton" name="exclude_with_few_points">
-             <property name="text">
-              <string>Yes</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
             <widget class="QLabel" name="label_5">
              <property name="text">
               <string>Exclude with insufficient points</string>
@@ -210,14 +183,88 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="2">
+           <item row="6" column="3">
+            <widget class="QPushButton" name="invalid_folder_btn">
+             <property name="text">
+              <string>Browse...</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="3">
+            <widget class="QPushButton" name="valid_folder_btn">
+             <property name="text">
+              <string>Browse...</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>Invalid GPX folder</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QRadioButton" name="exclude_with_few_points">
+             <property name="text">
+              <string>Yes</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_2</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="4" column="2">
             <widget class="QRadioButton" name="no_exclude_few_points">
              <property name="text">
               <string>No</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_2</string>
+             </attribute>
             </widget>
            </item>
-           <item row="0" column="0" colspan="4">
+           <item row="3" column="2">
+            <widget class="QRadioButton" name="no_exclude_with_errors_rbtn">
+             <property name="text">
+              <string>No</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QRadioButton" name="exclude_with_errors_rbtn">
+             <property name="text">
+              <string>Yes</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Exclude with geometry error</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1" colspan="2">
+            <widget class="QLineEdit" name="valid_gpx_folder"/>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>Valid GPX folder</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" colspan="3">
             <widget class="QgsExtentGroupBox" name="extent_box">
              <property name="maximumSize">
               <size>
@@ -226,7 +273,7 @@
               </size>
              </property>
              <property name="title">
-              <string>Exclude outside extent</string>
+              <string>Map extent (current: none)</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -256,31 +303,15 @@
               <bool>false</bool>
              </property>
              <property name="titleBase">
-              <string>Exclude outside extent</string>
+              <string>Map extent</string>
              </property>
-             <zorder>label_4</zorder>
-             <zorder>exclude_with_errors_rbtn</zorder>
-             <zorder>no_exclude_with_errors_rbtn</zorder>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QRadioButton" name="no_exclude_with_errors_rbtn">
-             <property name="text">
-              <string>No</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QRadioButton" name="exclude_with_errors_rbtn">
-             <property name="text">
-              <string>Yes</string>
-             </property>
+             <zorder>label_9</zorder>
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="label_9">
              <property name="text">
-              <string>Exclude with geometry error</string>
+              <string>Exclude outside extent</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -288,6 +319,68 @@
             </widget>
            </item>
           </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="fields_tab">
+        <attribute name="title">
+         <string>Fields</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>Choose layer fields</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QGroupBox" name="exclude_fields_groupbox">
+             <property name="title">
+              <string>Check All/ Uncheck All</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QTreeView" name="exclude_fields_view">
+                <property name="frameShape">
+                 <enum>QFrame::Box</enum>
+                </property>
+                <property name="editTriggers">
+                 <set>QAbstractItemView::NoEditTriggers</set>
+                </property>
+                <property name="alternatingRowColors">
+                 <bool>false</bool>
+                </property>
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::NoSelection</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>24</width>
+             <height>200</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -309,8 +402,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>472</width>
-              <height>277</height>
+              <width>528</width>
+              <height>314</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -429,4 +522,8 @@
    </hints>
   </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

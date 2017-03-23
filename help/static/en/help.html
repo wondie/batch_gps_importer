@@ -5,24 +5,72 @@
     <title>Batch GPS Importer Documentation</title>
 </head>
 <body>
-When choosing features the following default setting exists.
-gpx feature type         geometry type default         with combine checked
-Track                    point, line                     polygon
-Waypoint                 point, polygon, line
-route                    point
+<h1>Batch GPS Importer</h1>
+<h2>GPX Folder</h2>
+<p>Choose the folder in which the gpx files reside
+    by clicking on the Browser button. </p>
+<h2>Scan Sub-folders</h2>
+<p>Click on <strong>Yes</strong> to import gpx files in sub-folders or
+    <strong>No</strong> to only import from the currently selected folder. </p>
+<h2>GPX Format</h2>
+<p>Choose one GPX format which could be track, waypoint, or route.
+This is determined during the GPS data collection. </p>
+<h2>Layer Name</h2>
+<p>Specify a name for the output layer.
+    If not specified, the default layer will be used.</p>
+<h2>Geometry Type</h2>
+<p>Choose the geometry type of the output Layer.
+    It can be Polygon, Line or Point. If you choose Polygon and Line,
+    only the first attributes of each feature will be used. For Point
+    geometry type, all point attributes are captured. </p>
+<h2>Projection</h2>
+<p>Choose the coordinate reference system used when collecting the GPS points.
+    This will also be used as the layer projection. </p>
+<h2>Exclude Outside Extent</h2>
+<p>When this extent box is activated, it automatically captures the extent of
+    the map. When you click on the Import button, this extent will be used to
+    crop other features outside the visible map extent. </p>
+<h2>Exclude with Geometry Errors</h2>
+<p>Choose to exclude or include features with geometry error. If you click
+    Yes, features with geometry error will be excluded and the error message
+    and the gpx files will be shown in the log tab. </p>
+<h2>Exclude with Insufficient Points</h2>
+<p>Exclude or include GPX features with insufficient point that is not
+    enough to create a valid geometry. This filter is applicable for lines
+and polygons. For line, the minimum points required are 2. For polygon,
+    the minimum required points are 3. </p>
+<p>If you click on the Yes radio button,
+    features with points below the required number will be excluded.
+    If you click on the No button, features with points below the
+    required number will be included. This could lead to the presence features
+    with no visible geometry.</p>
+<h2>Valid GPX Folder</h2>
+<p>If you would like to filter out and keep the valid gpx files used in
+    the output layer. Select a folder. If not specified,
+    the valid gpx files will not be copied.</p>
+<h2>Invalid GPX Folder</h2>
+<p>If you would like to identify invalid gpx files that are not used in
+    the output layer. Select a folder. If not specified,
+    the invalid gpx files will not be copied.</p>
+<h2>Choose Layer Fields</h2>
+<p>You can include or exclude layer fields that will be added in the map.
+If you remove the check of a field, it will not be included in the layer
+with also leads to the loss of information under that field.
+</p>
+<p>By default, the id column will be added and it can't be removed.</p>
 
-working
-waypoint - point
-track - line
-route - line
-waypoint - polygon - check combine and disable
-track - polygon - check combine and disable
-route - polygon - check combine and disable
+<!--working-->
+<!--waypoint - point-->
+<!--track - line-->
+<!--route - line-->
+<!--waypoint - polygon - check combine and disable-->
+<!--track - polygon - check combine and disable-->
+<!--route - polygon - check combine and disable-->
 
-partly working
-track - point - attributes repeated
-route - point - attributes repeated or not fully accessed
-waypoint - line - features and geometry are not linked
+<!--partly working-->
+<!--track - point - attributes repeated-->
+<!--route - point - attributes repeated or not fully accessed-->
+<!--waypoint - line - features and geometry are not linked-->
 
 
 </body>
