@@ -1,8 +1,9 @@
 from collections import OrderedDict
 from PyQt4.QtCore import QFile
+from PyQt4.QtGui import QApplication
 from PyQt4.QtXml import QDomDocument
 
-class GPXUtil():
+class GpxUtil():
 
     def __init__(self, gpx_path):
         """
@@ -41,37 +42,6 @@ class GPXUtil():
             nodes.append(node)
         return nodes
 
-    def set_attribute_to_nodes(self, nodes, attr, value):
-        """
-        Sets an attribute with value to node lists.
-        :param nodes: List of nodes
-        :type nodes: QNodeList
-        :param attr: The attribute text
-        :type attr: String
-        :param value: The value of the attribute.
-        :type value: String
-        :return:
-        :rtype:
-        """
-        for node in nodes:
-            element = node.toElement()
-            element.setAttribute(attr, value)
-
-    def set_attribute_by_node_name(self, node_name, attr, value):
-        """
-        Sets attribute with value to nodes by node name.
-        :param node_name: The name of the node.
-        :type node_name: Strong
-        :param attr: The attribute text
-        :type attr: String
-        :param value: The value of the attribute.
-        :type value: String
-        :return:
-        :rtype:
-        """
-        nodes = self.find_gpx_node(node_name)
-        self.set_attribute_to_nodes(nodes, attr, value)
-
     def gpx_feature_by_name(self, tag_name):
         """
         Gets the gpx feature by name with a specified tag name.
@@ -86,3 +56,19 @@ class GPXUtil():
             gpx_child = gpx_node.firstChildElement(tag_name)
             first_child[gpx_node] = gpx_child
         return first_child
+
+    def gpx_point_attributes(self, gpx_feature_name):
+        node_list = self.find_gpx_node(gpx_feature_name)
+        point_attributes = OrderedDict()
+        QApplication.processEvents()
+        for point_row, nod in enumerate(node_list):
+            child = nod.childNodes()
+
+            attribute = {}
+            for i in range(child.length()):
+                n = child.item(i)
+                n.nodeName(), n.toElement().text()
+                attribute[n.nodeName()] = n.toElement().text()
+            point_attributes[point_row] = attribute
+
+        return point_attributes

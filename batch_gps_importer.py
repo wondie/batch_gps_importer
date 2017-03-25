@@ -26,13 +26,25 @@ from ui.gps_importer import GpsImporter
 from . import PLUGIN_FOLDER
 
 
-class BatchGpsImporter:
+class BatchGpsImporter(object):
+    """
+    BatchGpsImport initializes the whole plugin and adds the plugin on toolbar
+    and Vector menu of GGIS.
+    """
     def __init__(self, iface):
+        """
+        Initializes iface and importer object.
+        :param iface:
+        :type iface:
+        """
         self.iface = iface
         self.importer = None
 
     def initGui(self):
-        # create action that will start plugin configuration
+        """
+        Initializes the plugin GUI.
+        """
+
         self.action = QAction(
             QIcon(":/plugins/{}/images/batch.png".format(PLUGIN_FOLDER)),
             "Batch GPS Importer", self.iface.mainWindow()
@@ -47,6 +59,9 @@ class BatchGpsImporter:
         self.iface.addPluginToVectorMenu("&Batch GPS Importer", self.action)
 
     def unload(self):
+        """
+        Removes the plugin properly.
+        """
         # remove the plugin menu item and icon
         self.iface.removePluginMenu("&Batch GPS Importer", self.action)
         self.iface.removeToolBarIcon(self.action)
@@ -54,10 +69,14 @@ class BatchGpsImporter:
         self.action.triggered.disconnect(self.run)
 
     def run(self):
+        """
+        Starts the plugin GUI.
+        :return:
+        :rtype:
+        """
         if self.importer is None:
             self.importer = GpsImporter(self.iface)
-            self.importer.show_importer()
+            self.importer.show()
         else:
-            #self.importer = GpsImporter(self.iface)
-            self.importer.show_importer()
+            self.importer.show()
             self.importer.activateWindow()

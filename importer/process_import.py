@@ -22,11 +22,10 @@ import glob
 import shutil
 from collections import OrderedDict
 import os
-from PyQt4.QtCore import QObject
-from PyQt4.QtCore import QVariant, pyqtSignal
-from PyQt4.QtGui import QApplication
-from PyQt4.QtGui import QLabel
-from PyQt4.QtGui import QProgressDialog
+from PyQt4.QtCore import QObject, QVariant, pyqtSignal
+
+from PyQt4.QtGui import QApplication, QLabel, QProgressDialog
+
 from qgis.core import (
     QgsGeometry,
     QgsFeature,
@@ -34,12 +33,12 @@ from qgis.core import (
     QgsPointV2,
     QgsVectorLayer,
     QgsRectangle,
-    QgsField
+    QgsField,
+    QgsMapLayerRegistry
 )
-from qgis.core import QgsMapLayerRegistry
 
 from osgeo import ogr
-from gpx_util import GPXUtil
+from gpx_util import GpxUtil
 VALID_GPX_FILES = []
 INVALID_GPX_FILES = []
 ID_NUMBER = 0
@@ -58,8 +57,15 @@ GPX_FIELDS = OrderedDict([
 ])
 
 
-class ParamStore:
+class ParamStore(object):
+    """
+    Stores parameters and required fields of Batch GPX Importer. It servers
+    both the Import Initializer class Process Combine and GPXToFeature.
+    """
     def __init__(self):
+        """
+        Initializes the parameter properties.
+        """
         self.input_path = None
         self.geometry_type = None
         self.feature_types = None
@@ -72,11 +78,16 @@ class ParamStore:
         self.scan_sub_folders = True
         self.valid_gpx_folder = None
         self.invalid_gpx_folder = None
-        self.layer_name = 'final_layer'
+        self.layer_name = QApplication.translate(
+            'ParamStore', 'combined_layer'
+        )
         self.excluded_fields = []
         self.iface = None
 
     def set_required(self):
+        """
+        Sets a required fields of the parameters.
+        """
         self.required = {
             QApplication.translate(
                 'ParamStore', 'GPX folder'
@@ -91,9 +102,18 @@ class ParamStore:
 
 
 class GpxToFeature(QObject):
+    """
+    Creates a QGIS features from gpx file path.
+    """
     progress = pyqtSignal(str)
 
     def __init__(self, param_store):
+        """
+        Initializes and sets the parameter properties.
+        :param param_store: The ParamStore object containing all parameters
+        required to create a QgsFeature from a gpx file.
+        :type param_store: Object
+        """
         self.iface = param_store.iface
         QObject.__init__(self, self.iface.mainWindow())
         self.map_canvas = self.iface.mapCanvas()
@@ -121,6 +141,8 @@ class GpxToFeature(QObject):
         self.gpx_data = OrderedDict()
         self.valid_gpx_files = []
         self.invalid_gpx_files = []
+        self._point_attributes = OrderedDict()
+        self._point_row = 0
         self.feature_points = {
             'tracks':'trkpt', 'routes':'rtept', 'waypoints':'wpt'
         }
@@ -128,16 +150,19 @@ class GpxToFeature(QObject):
             'tracks':'trk', 'routes':'rte', 'waypoints':'wpt'
         }
 
-
-
-
     def init_gpx_import(self, gpx_path):
+        """
+        Initializes the gpx import by setting the gpx path. This method must be
+         called outside the class to properly connect signals.
+        :param gpx_path: The gpx file path.
+        :type gpx_path: String
+        """
         # Open GPX file
         if self._file_is_readable(gpx_path):
             self.gpx_file_name = os.path.basename(gpx_path)
             self.file_name = self.gpx_file_name.rstrip('.gpx')
             self.gpx_path = gpx_path
-            self.gpx_util = GPXUtil(self.gpx_path)
+            self.gpx_util = GpxUtil(self.gpx_path)
 
             data_source = ogr.Open(gpx_path)
             if data_source is not None:
@@ -147,79 +172,21 @@ class GpxToFeature(QObject):
                         self.feature_type
                     )
 
-
                     if self.ogr_layer.GetFeatureCount() > 0:
-                        # try:
-                        self.gpx_to_point_list()
+                        try:
+                            self.gpx_to_point_list()
+                        except Exception as ex:
+                            self.error_type = ex.message
+                            self.add_progress()
 
-                        # except Exception as ex:
-                        #     self.error_type = ex.message
-                        #     self.add_progress()
                         self.save_valid_folders()
                         self.save_invalid_folders()
-
-    def get_point_attribute(self):
-
-        feature_node_elements = self.gpx_util.gpx_feature_by_name(
-            self.xml_feature_types[self.feature_type]
-        )
-        point_attributes = {}
-        node = feature_node_elements.keys()[0]
-        point_nodes = node.toElement().elementsByTagName(self.xml_feature_types[self.feature_type])
-        for i in range(point_nodes.count()):
-            attribute_node = point_nodes.at(i)
-            attribute_element = attribute_node.toElement()
-            #print attribute_element.attribute(field)
-            #attribute_nodes = attribute_element.elementsByTagName(field)
-            print attribute_element.tagName(), attribute_element.text()
-            # for i in range(attribute_nodes.count()):
-            #     attribute_node = attribute_nodes.at(i)
-            #     attr_value = attribute_node.toElement().text()
-            #
-            #     point_attributes[field] = attr_value
-                #print field, attr_value
-
-
-
-
-        #self._current_attribute = point_attributes[field]
-            # for ele in attribute_node.firstChildElement():
-            #     print ele
-            # print attribute_element.tagName()
-            # attr_value = attribute_element.text()
-            # point_attribute.append(attr_value)
-       # print point_attribute
-        # attribute_nodes = element.elementsByTagName(field)
-        #
-        # for i in range(attribute_nodes.count()):
-        #     attribute_node = attribute_nodes.at(i)
-        #     # get the value element
-        #
-        #
-        #     attribute_element = attribute_node.toElement()
-        #
-        #     attr_value = attribute_element.text()
-        #     point_attribute.append(attr_value)
-       # print point_attribute
-        #
-        # for node, ele in nodes:
-        #     print ele.text()
-        #
-        #     route_point_nodes = self.gpx_util.find_gpx_node(
-        #         self.feature_points[self.feature_type]
-        #     )
-        #     for route_point_node in route_point_nodes:
-        #         names = route_point_node.toElement().elementsByTagName(field)
-        #         for i in range(names.count()):
-        #             name = names.at(i)
-        #             attr_value = name.toElement().text()
-        #             point_attribute[j] = {field: attr_value}
-        #
-        # print point_attribute
 
     def _file_is_readable(self, gpx_path):
         """
         Checks if the gpx file is readable.
+        :param gpx_path: The gpx file path.
+        :type gpx_path: String
         :return: True if it is a file and readable otherwise return False.
         :rtype: Boolean
         """
@@ -229,11 +196,14 @@ class GpxToFeature(QObject):
             else:
                 return True
         except Exception as ex:
-            self.error_type = ex
+            self.error_type = ex.message
 
     def gpx_to_point_list(self):
-        self.extract_geometry()
-
+        """
+        A container method that runs all other methods that extract geometry,
+        attributes, and creates point, line, and polygon features.
+        """
+        self.join_points_and_attributes()
         if len(self.gpx_data) < 1:
             return
         self.create_polygon()
@@ -243,72 +213,97 @@ class GpxToFeature(QObject):
         self.add_progress()
 
     def save_valid_folders(self):
+        """
+        Saves valid folder to a supplied folder. If no path is give,
+        nothing will be saved.
+        """
         if len(self.valid_gpx_folder) > 2:
             if self.error_type is None:
                 VALID_GPX_FILES.append(self.gpx_path)
 
     def save_invalid_folders(self):
+        """
+        Saves invalid folder to a supplied folder. If no path is give,
+        nothing will be saved.
+        """
         if len(self.invalid_gpx_folder) > 2:
             if self.error_type is not None:
                 INVALID_GPX_FILES.append(self.gpx_path)
 
-    def extract_geometry(self):
+    def join_points_and_attributes(self):
+        """
+        Joins geometry and attributes to be used to create a feature.
+        """
         self.gpx_data.clear()
         for i, ogr_feature in enumerate(self.ogr_layer):
             if ogr_feature is None:
                 continue
-
-            field_attributes = self.extract_attributes(ogr_feature)
-            geom = ogr_feature.GetGeometryRef()
-            wkt = geom.ExportToWkt()
-            qgs_geom = QgsGeometry.fromWkt(wkt)
-
-            qgs_geom.convertToMultiType()
+            qgs_geom = self.extract_geometry(ogr_feature)
+            self._point_attributes = self.gpx_util.gpx_point_attributes(
+                self.feature_points[self.feature_type]
+            )
 
             if self.feature_type == 'waypoints':
+                field_attributes = self.extract_attributes(i)
                 point = qgs_geom.asMultiPoint()
                 self.gpx_data[point[0]] = field_attributes
             else:
                 points = qgs_geom.asMultiPolyline()
-                for point in points[0]:
+                for point_row, point in enumerate(points[0]):
+                    field_attributes = self.extract_attributes(point_row)
                     self.gpx_data[point] = field_attributes
 
-    def extract_attributes(self, ogr_feature):
+    @staticmethod
+    def extract_geometry(ogr_feature):
+        """
+        Extracts QgsGeometry from OGR feature.
+        :param ogr_feature: The OGR feature
+        :type ogr_feature: Object
+        :return: The extracted geometry
+        :rtype: QgsGeometry
+        """
+        geom = ogr_feature.GetGeometryRef()
+        wkt = geom.ExportToWkt()
+        qgs_geom = QgsGeometry.fromWkt(wkt)
+        qgs_geom.convertToMultiType()
+        return qgs_geom
+
+    def extract_attributes(self, point_row=0):
         """
         Extracts the attributes of a feature.
-        :param ogr_feature: The gpx feature
-        :type ogr_feature: ogr.Feature
+        :param point_row: The point row a vertex
+        :type point_row: Integer
         :return: Dictionary of fields and attributes as key and value.
         :rtype: OrderedDict
         """
-
         field_attributes = OrderedDict()
-
+        if len(self._point_attributes) > 1:
+            current_attributes = self._point_attributes[point_row]
+        else:
+            current_attributes = OrderedDict()
+        QApplication.processEvents()
         for original_field, final_field in GPX_FIELDS.iteritems():
-            QApplication.processEvents()
-            try:
-                if final_field in self.excluded_fields:
-                    continue
-                if original_field not in ['file_name', 'feature_type']:
-                    attribute = ogr_feature.GetField(original_field)
-                    self.get_point_attribute()
-                    field_attributes[final_field] = self._current_attribute
-
-                elif original_field == 'feature_type':
-                    field_attributes['feature_type'] = self.feature_type
-                else:
-                    if final_field == 'file_name':
-                        field_attributes['file_name'] = self.gpx_file_name
-            except Exception:
+            if final_field in self.excluded_fields:
+                continue
+            if original_field in current_attributes.keys():
+                field_attributes[final_field] = current_attributes[
+                    original_field
+                ]
+            elif original_field == 'feature_type':
+                field_attributes['feature_type'] = self.feature_type
+            elif original_field == 'file_name':
+                    field_attributes['file_name'] = self.gpx_file_name
+            else:
                 field_attributes[final_field] = None
-
         return field_attributes
 
     def create_line(self):
+        """
+        Creates a line feature.
+        """
         if self.geometry_type == 'Linestring':
             line_geom = QgsGeometry.fromPolyline(self.gpx_data.keys())
             attributes = self.gpx_data.values()[0]
-
             # validate_insufficient_points
             if not self.validate_insufficient_points(self.gpx_data.keys(), 2):
                 return
@@ -319,6 +314,9 @@ class GpxToFeature(QObject):
                 self.create_feature(line_geom, self.gpx_data.values()[0])
 
     def create_point(self):
+        """
+        Creates a point feature.
+        """
         if self.geometry_type == 'Point':
             invalid_geom = []
             for points, attributes in self.gpx_data.iteritems():
@@ -335,6 +333,9 @@ class GpxToFeature(QObject):
                 )
 
     def create_polygon(self):
+        """
+        Creates a polygon feature.
+        """
         if self.geometry_type == 'Polygon':
             poly_geom = QgsGeometry.fromPolygon([self.gpx_data.keys()])
             attributes = self.gpx_data.values()[0]
@@ -352,7 +353,13 @@ class GpxToFeature(QObject):
                 )
 
     def create_feature(self, gpx_geom, attributes):
-
+        """
+        Creates a QgsFeature from QgsGeometry and attributes.
+        :param gpx_geom: The gpx geometry
+        :type gpx_geom: QgsGeometry
+        :param attributes: The attribute of the gpx feature.
+        :type attributes: OrderedDict
+        """
         global ID_NUMBER
         ID_NUMBER += 1
         for field in attributes.keys():
@@ -369,6 +376,10 @@ class GpxToFeature(QObject):
             self.final_features.append(feature)
 
     def add_progress(self):
+        """
+        Adds a progress text by emitting progress and sending a message through
+        the emitted signal.
+        """
         QApplication.processEvents()
         if len(self.final_features) == 0:
             if self.error_type is not None:
@@ -387,6 +398,18 @@ class GpxToFeature(QObject):
             self.progress.emit(success_message)
 
     def validate_insufficient_points(self, geoms, point_counts):
+        """
+        Validates for the presence of insufficient points when creating lines
+        and polygons.
+        :param geoms: The geometry to be validated.
+        :type geoms: QgsGeometry
+        :param point_counts: The minimum number of points allowed to create
+        a geometry. For line it is 2 and for polygon it is 3.
+        :type point_counts: Integer
+        :return: The state of the validity. It returns true if valid and false
+        if invalid.
+        :rtype: Boolean
+        """
         error_state = True
         if self.exclude_with_few_points:
 
@@ -404,6 +427,18 @@ class GpxToFeature(QObject):
             return error_state
 
     def validate_geometry(self, geom, suppress_errors=False):
+        """
+        Checks if geometry errors exists in a geometry.
+        :param geoms: The geometry to be validated.
+        :type geoms: QgsGeometry
+        :param suppress_errors: If True, prevents error message from
+        appearing in the log. Otherwise, if False, errors will be shown in
+        the log.
+        :type suppress_errors: Boolean
+        :return: The state of the validity. It returns true if valid and false
+        if invalid.
+        :rtype: Boolean
+        """
         if self.exclude_with_error:
             errors = geom.validateGeometry()
             if len(errors) == 0:
@@ -419,7 +454,14 @@ class GpxToFeature(QObject):
             return True
 
     def validate_extent(self, extent_rect):
-
+        """
+        It checks the supplied extent is the within the bounding box of the map.
+        :param extent_rect: The bonding box of the geometry.
+        :type extent_rect: QgsRectangle
+        :return: A boolean showing the geometry is within the boundary with true
+         or outside the extent with false.
+        :rtype: Boolean
+        """
         if self.extent_bound_enabled:
             x_min = extent_rect.xMinimum()
             x_max = extent_rect.xMaximum()
@@ -439,9 +481,18 @@ class GpxToFeature(QObject):
 
 
 class ProcessCombine(QObject):
+    """
+    Scans through the gpx files and initialize the GpxToFeature tool to import
+    to create the features and finally combine the features as a single layer.
+    """
     progress = pyqtSignal(str)
 
     def __init__(self, parent):
+        """
+        Initializes the processCombine
+        :param parent: The parent of QObject
+        :type parent: QWidget
+        """
         QObject.__init__(self, parent)
         self._parent = parent
         self.init_progress_dialog()
@@ -449,16 +500,19 @@ class ProcessCombine(QObject):
         self.layer_fields = None
         global ID_NUMBER
         ID_NUMBER = 0
+        self.number_of_gpx_files = 0
 
     def init_progress_dialog(self):
-
+        """
+        Initializes the progress dialog.
+        """
         self.progress_dlg = QProgressDialog(self._parent)
         self.progress_dlg.resize(340, self.progress_dlg.height())
         title = QApplication.translate('ProcessCombine', 'Importing...')
         self.progress_dlg.setWindowTitle(title)
         self.progress_dlg.open()
         self.progress_dlg.setValue(0)
-        self.progress_dlg.canceled.connect(self.stop_importing)
+        self.progress_dlg.canceled.connect(self.on_stop_importing)
         label = QLabel()
         label.setWordWrap(True)
         label.setMinimumHeight(17)
@@ -466,13 +520,28 @@ class ProcessCombine(QObject):
         self.progress_dlg.setLabel(label)
         self.progress_dlg.open()
 
-    def stop_importing(self):
+    def on_stop_importing(self):
+        """
+        A slot raised to stops the importing process. This happens when the
+        progress dialog cancel button is clicked.
+        """
         self.stop_import = True
 
-    def update_progress(self, progress):
+    def on_update_progress(self, progress):
+        """
+        A slot raised used to update the progress by emitting progress message
+        from GpxToFeature signal called progress.
+        :param progress: The progress message.
+        :type progress: String
+        """
         self.progress.emit(progress)
 
     def gpx_to_feature_list(self, parm_store):
+        """
+        Gets QgsFeature list by supplying gpx files.
+        :param parm_store: The parameter store object
+        :type parm_store: Class
+        """
         feature_list = []
         parent_path = os.path.dirname(parm_store.input_path)
         for dir_path, sub_dirs, files in os.walk(parm_store.input_path):
@@ -490,8 +559,10 @@ class ProcessCombine(QObject):
             )
             self.progress_dlg.setLabelText(text)
             gpx_files = glob.glob('{}/*.gpx'.format(dir_path))
-            if len(gpx_files) == 0:
+            gpx_count = len(gpx_files)
+            if gpx_count == 0:
                 continue
+            self.number_of_gpx_files += gpx_count
             self.progress_dlg.setRange(0, len(gpx_files))
 
             for i, gpx_file in enumerate(gpx_files):
@@ -500,7 +571,7 @@ class ProcessCombine(QObject):
                     break
                 gpx_path = os.path.join(dir_path, gpx_file)
                 gpx_to_layer = GpxToFeature(parm_store)
-                gpx_to_layer.progress.connect(self.update_progress)
+                gpx_to_layer.progress.connect(self.on_update_progress)
                 gpx_to_layer.init_gpx_import(gpx_path)
                 if not self.stop_import:
                     self.progress_dlg.setValue(i)
@@ -512,43 +583,61 @@ class ProcessCombine(QObject):
 
         return feature_list
 
-    def combine_layers(self, parm_store):
-        parm = parm_store
+    def combine_features(self, parm_store):
+        """
+        Combines all features under one layer.
+        :param parm_store: The parameter store object
+        :type parm_store: Class
+        :return:
+        :rtype:
+        """
         final_layer = QgsVectorLayer(
             "{0}?crs=epsg:{1}&field=id:integer&index=yes".format(
-                parm.geometry_type, parm.gpx_projection
+                parm_store.geometry_type, parm_store.gpx_projection
             ),
-            parm.layer_name,
+            parm_store.layer_name,
             "memory"
         )
-        feature_list = self.gpx_to_feature_list(parm)
+
+        feature_list = self.gpx_to_feature_list(parm_store)
         if self.layer_fields is None:
-            # TODO fix the cause of abort message dure to failure of blocksignal
-            self.blockSignals(True)
+            self.progress_dlg.blockSignals(True)
             self.progress_dlg.close()
-            self.blockSignals(False)
-            return None
+            self.progress_dlg.blockSignals(False)
+            return 0
         if self.stop_import:
             return None
         provider = final_layer.dataProvider()
+
         final_layer.startEditing()
-
         provider.addAttributes(self.layer_fields)
-
         final_layer.updateFields()
         provider.addFeatures(feature_list)
-
         final_layer.commitChanges()
+
         final_layer.updateExtents()
         QgsMapLayerRegistry.instance().addMapLayer(final_layer)
         return len(feature_list)
 
-    def finish_import(self, param):
-        number_of_features = self.combine_layers(param)
+    def finish_import(self, parm_store):
+        """
+        Finishes the import process.
+        :param parm_store: The parameter store object
+        :type parm_store: Class
+        :return: None if the process is aborted or number_features is None
+        :rtype: NoneType
+        """
+        combine_text = QApplication.translate(
+            'ProcessCombine',
+            '<html>Combining features to create {} layer</html>'.
+                format(parm_store.layer_name)
+        )
+        self.progress.emit(combine_text)
+        number_of_features = self.combine_features(parm_store)
         if self.stop_import:
             abort_text = QApplication.translate(
                 'ProcessCombine',
-                '<html><b>The importing process is aborted!</b</html>'
+                '<html><b>The importing process is aborted!</b></html>'
             )
             self.progress.emit(abort_text)
             return
@@ -561,25 +650,31 @@ class ProcessCombine(QObject):
                 'in the folder!</b</html>'
             )
             self.progress.emit(end_text)
-            self.progress_dlg.blockSignals(True)
             self.progress_dlg.cancel()
-            self.progress_dlg.blockSignals(False)
             return
 
-        self.copy_gpx_files(VALID_GPX_FILES, param.valid_gpx_folder)
-        self.copy_gpx_files(INVALID_GPX_FILES, param.invalid_gpx_folder)
+        self.copy_gpx_files(VALID_GPX_FILES, parm_store.valid_gpx_folder)
+        self.copy_gpx_files(INVALID_GPX_FILES, parm_store.invalid_gpx_folder)
 
         self.progress_dlg.cancel()
         end_text = QApplication.translate(
             'ProcessCombine',
-            '<html><b>Successfully imported {} features!</b</html>'.format(
-                number_of_features
+            '<html><b>Successfully imported {} features from {} gpx files!'
+            '</b</html>'.format(
+                number_of_features, self.number_of_gpx_files
             )
         )
         self.progress.emit(end_text)
 
     @staticmethod
     def copy_gpx_files(source_files, destination_folder):
+        """
+        Copies gpx files from a source folder to a destination folder.
+        :param source_files: The source folder
+        :type source_files: String
+        :param destination_folder: The destination folder
+        :type destination_folder: String
+        """
         for gpx_path in source_files:
             gpx_file = os.path.basename(gpx_path)
             destination = os.path.join(destination_folder, gpx_file)

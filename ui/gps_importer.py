@@ -33,7 +33,6 @@ from PyQt4.QtGui import (
     QStandardItem,
     QStandardItemModel
 )
-from PyQt4.QtGui import QMouseEvent
 
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform
 
@@ -45,7 +44,15 @@ from .. import DYNAMIC_HELP, HOME, STATIC_HELP
 from help import StaticHelp, STATIC_HELP_FILE
 
 class GpsImporter(QDialog, Ui_BatchGpsImporter):
+    """
+    A GUI class that enable users set parmeters to batch import gpx files.
+    """
     def __init__(self, iface):
+        """
+        Initializes the user interface and properties.
+        :param iface: The QGis interface
+        :type iface: qgis.utils.iface
+        """
 
         QDialog.__init__(self, iface.mainWindow())
         self.iface = iface
@@ -82,15 +89,18 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
             lambda: self.file_dialog(self.invalid_gpx_folder)
         )
         self.invalid_gpx_folder.textChanged.connect(self.validate_folder_path)
-        self.canvas.extentsChanged.connect(self.update_extent_box)
-        self.extent_box.clicked.connect(self.update_extent_box)
-        self.extent_box.collapsedStateChanged.connect(self.prevent_collapse)
+        self.canvas.extentsChanged.connect(self.on_update_extent_box)
+        self.extent_box.clicked.connect(self.on_update_extent_box)
+        self.extent_box.collapsedStateChanged.connect(self.on_prevent_collapse)
         self.dynamic_help_btn.clicked.connect(self.on_dynamic_help)
         self.help_events()
 
     def init_gui(self):
+        """
+        Initializes the GUI.
+        """
         self.populate_geometry_type()
-        self.populate_field_combo()
+        self.populate_field_box()
         self.rename_buttonbox()
         self.add_dynamic_help_button()
         self.hide_dynamic_help(on_load_hide=True)
@@ -111,6 +121,10 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         static_help.show()
 
     def hide_extent_buttons(self):
+        """
+        Hides the extent box buttons as they are not necessary. The extent box
+        updates automatically on map zoom.
+        """
         for button in self.extent_box.findChildren(QPushButton):
             button.setHidden(True)
             button.parent().setHidden(True)
@@ -118,9 +132,18 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
             button.parent().deleteLater()
 
     def help_events(self):
+        """
+        Connects help events to methods of showing help.
+        """
         self.mousePressEvent = self.set_help_text
 
     def set_help_text(self, event):
+        """
+        Help event listener that responds to mouse click on labels to show
+        dynamic help text.
+        :param event: The event
+        :type event: QMouseEvent
+        """
         if not self.dynamic_help_box.isVisible():
             return
         widget = QApplication.widgetAt(QCursor.pos())
@@ -129,6 +152,11 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
             self.load_html_from_text(text)
 
     def load_html_from_text(self, text):
+        """
+        Loads html file by constructing the path using a clicked label.
+        :param text: The label text
+        :type text: String
+        """
         self.dynamic_help_box.setHtml('')
         file_name = text.replace(' ', '_').lower().replace('-', '_')
         help_path = '{}/{}.html'.format(DYNAMIC_HELP, file_name)
@@ -146,6 +174,9 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.dynamic_help_box.load(help_url)
 
     def add_dynamic_help_button(self):
+        """
+        Adds the dynamic help button.
+        """
         self.dynamic_help_btn = QPushButton(
             QApplication.translate(
                 'GpsImporter', 'Show Dynamic Help'
@@ -156,6 +187,12 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         )
 
     def hide_dynamic_help(self, on_load_hide=False):
+        """
+        Hides the dynamic help button.
+        :param on_load_hide: Determins weather the method is called when the
+        GUI is loaded or not.
+        :type on_load_hide: Boolean
+        """
         if not on_load_hide:
             self.curr_help_box_width = self.dynamic_help_box.width()
 
@@ -168,12 +205,10 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         )
         self.dynamic_help_btn.setText(hide_text)
 
-    def on_help_box_resize(self, event):
-        # if dynamic help box width changes, set the help_box_width
-        if self.dynamic_help_box.width() > 0:
-            self.help_box_width = self.dynamic_help_box.width()
-
     def show_dynamic_help(self):
+        """
+        Shows the dynamic help box.
+        """
         self.dynamic_help_box.setVisible(True)
 
         if self.curr_help_box_width > 0:
@@ -199,12 +234,20 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.dynamic_help_btn.setText(hide_text)
 
     def on_dynamic_help(self):
+        """
+        A slot raised when the show/hide dynamic help button is clicked.
+        """
         if self.dynamic_help_box.isVisible():
             self.hide_dynamic_help()
         else:
             self.show_dynamic_help()
 
     def rename_buttonbox(self):
+        """
+        Rename the Ok and Cancel buttons to Import and Exit.
+        :return:
+        :rtype:
+        """
         import_txt = QApplication.translate(
             'GpsImporter', 'Import'
         )
@@ -214,15 +257,29 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.buttonBox.button(QDialogButtonBox.Ok).setText(import_txt)
         self.buttonBox.button(QDialogButtonBox.Cancel).setText(exit_txt)
 
-    def update_progress(self, text):
+    def on_update_progress(self, text):
+        """
+        A slot raised used to update the progress by emitting progress message.
+        :param text: The progress message.
+        :type text: String
+        """
         QApplication.processEvents()
 
         self.progress_text_edit.append(text)
 
-    def prevent_collapse(self):
+    def on_prevent_collapse(self):
+        """
+        Prevent the extent box collapse when the checkbox is clicked.
+        """
         self.extent_box.setCollapsed(False)
 
-    def update_extent_box(self):
+    def on_update_extent_box(self):
+        """
+        A slot raised to automatically update the bounding box coordinates when
+        the the map zoom level changes and when the extent box is enabled.
+        :return:
+        :rtype:
+        """
         if not self.extent_box.isChecked():
             return
         try:
@@ -261,11 +318,17 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
             pass
 
     def populate_geometry_type(self):
+        """
+        Populate the geometry type combobox.
+        """
         self.geometry_type_cbo.addItem('', None)
         for key, value in GEOMETRY_TYPES.iteritems():
             self.geometry_type_cbo.addItem(value, key)
 
-    def populate_field_combo(self):
+    def populate_field_box(self):
+        """
+        Populate the fields combobox.
+        """
         model = QStandardItemModel(1, 0)
         model.setColumnCount(2)
         field_count = len(GPX_FIELDS)
@@ -282,10 +345,15 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
                 self.field_items[item_text] = 0
         self.exclude_fields_view.setModel(model)
         self.exclude_fields_view.model().itemChanged.connect(
-            self.on_fields_unchecked
+            self.on_fields_toggled
         )
 
     def on_fields_group_box_toggled(self):
+        """
+        A slot raised when the fields group box is checked or unchecked.
+        Removes the selection from all fields when unchecked and selects all
+        fields when checked.
+        """
         for text, column in self.field_items.iteritems():
             items = self.exclude_fields_view.model().findItems(
                 text, Qt.MatchExactly, column
@@ -296,7 +364,14 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
                 else:
                     item.setCheckState(Qt.Unchecked)
 
-    def on_fields_unchecked(self, item):
+    def on_fields_toggled(self, item):
+        """
+        A slot raised when a field is checked or unchecked.
+        The field unchecked is added to excluded_fields list. If checked,
+        the field will be removed from the excluded_list.
+        :param item: The field item
+        :type item: QStandardItem
+        """
         if item.checkState() == Qt.Unchecked:
             self.excluded_fields.append(item.text())
         else:
@@ -320,7 +395,9 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
             last_path,
             QFileDialog.ShowDirsOnly
         )
-        line_edit.setText(path)
+        if len(path) > 0:
+            line_edit.setText(path)
+
         if line_edit == self.input_gpx_folder:
             self._input_gpx_folder_path = path
         if line_edit == self.valid_gpx_folder:
@@ -329,6 +406,13 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
             self._invalid_gpx_folder_path = path
 
     def validate_folder_path(self, text):
+        """
+        Checks the folder path corresponds to a real folder.
+        :param text: The path
+        :type text: String
+        :return: None
+        :rtype: NoneType
+        """
         if text == '':
             return
         if not os.path.isdir(text):
@@ -347,10 +431,10 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
             if self.sender() == self.invalid_gpx_folder:
                 self.sender().setText(self._invalid_gpx_folder_path)
 
-    def show_importer(self):
-        self.show()
-
     def set_input_value(self):
+        """
+        Sets the input values to the ParamStore properties.
+        """
         self.param_store.input_path = self.input_gpx_folder.text()
         self.param_store.geometry_type = self.geometry_type_cbo.itemData(
             self.geometry_type_cbo.currentIndex()
@@ -386,6 +470,11 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.param_store.set_required()
 
     def validate_mandatory_inputs(self):
+        """
+        Validates mandatory inputs are filled.
+        :return: Return true if valid and false if not valid.
+        :rtype:
+        """
         unfilled = []
         for input_name, input_var in self.param_store.required.iteritems():
             if input_var == '' or input_var is None:
@@ -407,6 +496,12 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         return True
 
     def accept(self):
+        """
+        A builtin slot raised when the dialog is accepted with the click of
+        the Import button. It starts the import process.
+        :return: None if mandatory inputs are not filled.
+        :rtype: NoneType
+        """
         self.set_input_value()
         if not self.validate_mandatory_inputs():
             return
@@ -428,5 +523,5 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.tab_widget.setCurrentIndex(4)
         self.tab_widget.setCurrentWidget(self.log_tab)
         self.process = ProcessCombine(self.iface.mainWindow())
-        self.process.progress.connect(self.update_progress)
+        self.process.progress.connect(self.on_update_progress)
         self.process.finish_import(self.param_store)

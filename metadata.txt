@@ -7,8 +7,8 @@ version=0.1
 tags=GPS Import, GPX import, validate, batch GPS, batch GPX
 
 homepage=http://www.wondim.com/
-tracker=https://github.com/gltn/wondie/issues
-repository=https://github.com/wondie/batch_gps_importer
+tracker=https://bitbucket.org/wondie/batch_gps_importer/admin/issues
+repository=https:https://bitbucket.org/wondie/batch_gps_importer
 icon=images/icon.png
 
 experimental=False
