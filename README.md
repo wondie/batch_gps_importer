@@ -6,10 +6,20 @@ Batch GPS Importer a QGIS plugins that imports multiple GPX files as a layer in 
 
 * Import GPS features as point, polygon and line
 * Ability to read from track, waypoint and route GPX feature types 
-* Ability to ristrict extent and extract features from the ristricted extent
-* Ability to exclude features with invalid geometry 
+* Ability to restrict extent and extract features from the restricted extent
+* Ability to exclude features with invalid geometry
+* Ability to save gpx files with valid and invalid features
+* Ability to include or exclude default gpx layer fields
 
 ### How to install ###
+
+#### Option One
+
+1. Go to QGIS plugins menu
+2. Search for "Batch GPS Importer" without quotes.
+3. Select and download it
+
+#### Option Two
 
 1. Download the master
 2. Extract it C:/users/[current_user]/.qgis/python/plugins
@@ -22,6 +32,12 @@ Batch GPS Importer a QGIS plugins that imports multiple GPX files as a layer in 
 2. Make a pull request
 3. After code review, your contirbution will be incorporated
 
+### Documentation
+
+* www.datumhelper.com/products/batch-gps-importer/documentation/
+
 ### Contact ###
 
+* www.datumhelper.com/
 * Wondimagegn Tesfaye Beshah (wondim81@gmail.com)
+
