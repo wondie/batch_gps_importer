@@ -7,8 +7,8 @@ version=0.1.0
 tags=GPS Import, GPX import, batch GPS, batch GPX, GPX merge
 
 homepage=http://www.datumhelper.com/products/batch-gps-importer
-tracker=https://bitbucket.org/wondie/batch_gps_importer/admin/issues
-repository=https:https://bitbucket.org/wondie/batch_gps_importer
+tracker=https://github.com/wondie/batch_gps_importer/issues
+repository=https://github.com/wondie/batch_gps_importer
 icon=images/icon.png
 
 experimental=False
