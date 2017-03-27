@@ -19,7 +19,6 @@ class GpxUtil():
         """
         Reads the gpx file contents and creates QDomDocument version of it.
         """
-
         gpx_file_path = QFile(self.gpx_path)
 
         self.document = QDomDocument()

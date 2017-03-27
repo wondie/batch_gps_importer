@@ -55,7 +55,7 @@ GPX_FIELDS = OrderedDict([
     ('time', 'capture_time'), ('feature_type', 'feature_type'),
     ('file_name', 'file_name')
 ])
-
+STOP_IMPORT = False
 
 class ParamStore(object):
     """
@@ -79,7 +79,7 @@ class ParamStore(object):
         self.valid_gpx_folder = None
         self.invalid_gpx_folder = None
         self.layer_name = QApplication.translate(
-            'ParamStore', 'combined_layer'
+            'ParamStore', 'combined_gpx'
         )
         self.excluded_fields = []
         self.iface = None
@@ -147,13 +147,14 @@ class GpxToFeature(QObject):
             'tracks':'trkpt', 'routes':'rtept', 'waypoints':'wpt'
         }
         self.xml_feature_types = {
-            'tracks':'trk', 'routes':'rte', 'waypoints':'wpt'
+            'tracks': 'trk', 'routes': 'rte', 'waypoints': 'wpt'
         }
+        self.stop_feature_creation = False
 
     def init_gpx_import(self, gpx_path):
         """
         Initializes the gpx import by setting the gpx path. This method must be
-         called outside the class to properly connect signals.
+        called outside the class to properly connect signals.
         :param gpx_path: The gpx file path.
         :type gpx_path: String
         """
@@ -167,6 +168,8 @@ class GpxToFeature(QObject):
             data_source = ogr.Open(gpx_path)
             if data_source is not None:
                 for feature_type in self.feature_types:
+                    if STOP_IMPORT:
+                        return
                     self.feature_type = feature_type.encode('utf-8')
                     self.ogr_layer = data_source.GetLayerByName(
                         self.feature_type
@@ -176,9 +179,10 @@ class GpxToFeature(QObject):
                         try:
                             self.gpx_to_point_list()
                         except Exception as ex:
-                            self.error_type = ex.message
+                            self.error_type = ex
                             self.add_progress()
-
+                        if STOP_IMPORT:
+                            return
                         self.save_valid_folders()
                         self.save_invalid_folders()
 
@@ -204,6 +208,8 @@ class GpxToFeature(QObject):
         attributes, and creates point, line, and polygon features.
         """
         self.join_points_and_attributes()
+        if STOP_IMPORT:
+            return
         if len(self.gpx_data) < 1:
             return
         self.create_polygon()
@@ -236,9 +242,13 @@ class GpxToFeature(QObject):
         """
         self.gpx_data.clear()
         for i, ogr_feature in enumerate(self.ogr_layer):
+            if STOP_IMPORT:
+                return
             if ogr_feature is None:
                 continue
             qgs_geom = self.extract_geometry(ogr_feature)
+            if qgs_geom is None:
+                continue
             self._point_attributes = self.gpx_util.gpx_point_attributes(
                 self.feature_points[self.feature_type]
             )
@@ -250,6 +260,8 @@ class GpxToFeature(QObject):
             else:
                 points = qgs_geom.asMultiPolyline()
                 for point_row, point in enumerate(points[0]):
+                    if STOP_IMPORT:
+                        return
                     field_attributes = self.extract_attributes(point_row)
                     self.gpx_data[point] = field_attributes
 
@@ -380,7 +392,6 @@ class GpxToFeature(QObject):
         Adds a progress text by emitting progress and sending a message through
         the emitted signal.
         """
-        QApplication.processEvents()
         if len(self.final_features) == 0:
             if self.error_type is not None:
                 error_message = QApplication.translate(
@@ -496,10 +507,11 @@ class ProcessCombine(QObject):
         QObject.__init__(self, parent)
         self._parent = parent
         self.init_progress_dialog()
-        self.stop_import = False
         self.layer_fields = None
         global ID_NUMBER
         ID_NUMBER = 0
+        global STOP_IMPORT
+        STOP_IMPORT = False
         self.number_of_gpx_files = 0
 
     def init_progress_dialog(self):
@@ -510,22 +522,24 @@ class ProcessCombine(QObject):
         self.progress_dlg.resize(340, self.progress_dlg.height())
         title = QApplication.translate('ProcessCombine', 'Importing...')
         self.progress_dlg.setWindowTitle(title)
-        self.progress_dlg.open()
-        self.progress_dlg.setValue(0)
-        self.progress_dlg.canceled.connect(self.on_stop_importing)
         label = QLabel()
         label.setWordWrap(True)
         label.setMinimumHeight(17)
-        self.progress_dlg.setMaximumWidth(440)
+        self.progress_dlg.setMinimumWidth(500)
+        self.progress_dlg.setMaximumWidth(500)
         self.progress_dlg.setLabel(label)
+        self.progress_dlg.setValue(0)
+        self.progress_dlg.canceled.connect(self.on_stop_importing)
         self.progress_dlg.open()
 
-    def on_stop_importing(self):
+    @staticmethod
+    def on_stop_importing():
         """
         A slot raised to stops the importing process. This happens when the
         progress dialog cancel button is clicked.
         """
-        self.stop_import = True
+        global STOP_IMPORT
+        STOP_IMPORT = True
 
     def on_update_progress(self, progress):
         """
@@ -543,21 +557,15 @@ class ProcessCombine(QObject):
         :type parm_store: Class
         """
         feature_list = []
-        parent_path = os.path.dirname(parm_store.input_path)
         for dir_path, sub_dirs, files in os.walk(parm_store.input_path):
 
             QApplication.processEvents()
-            if self.stop_import:
-                break
+            if STOP_IMPORT:
+                return None
             # Exclude sub-folders if user have chosen not to scan sub-folders
             if not parm_store.scan_sub_folders:
                 if dir_path != parm_store.input_path:
                     continue
-            relative_path = os.path.relpath(dir_path, parent_path)
-            text = QApplication.translate(
-                'ProcessCombine', 'Scanning {}'.format(relative_path)
-            )
-            self.progress_dlg.setLabelText(text)
             gpx_files = glob.glob('{}/*.gpx'.format(dir_path))
             gpx_count = len(gpx_files)
             if gpx_count == 0:
@@ -567,13 +575,20 @@ class ProcessCombine(QObject):
 
             for i, gpx_file in enumerate(gpx_files):
                 QApplication.processEvents()
-                if self.stop_import:
-                    break
+                if STOP_IMPORT:
+                    return None
                 gpx_path = os.path.join(dir_path, gpx_file)
+                parent_path = os.path.dirname(parm_store.input_path)
+                relative_path = os.path.relpath(gpx_path, parent_path)
+                text = QApplication.translate(
+                    'ProcessCombine', 'Scanning {}'.format(relative_path)
+                )
+                self.progress_dlg.setLabelText(text)
+
                 gpx_to_layer = GpxToFeature(parm_store)
                 gpx_to_layer.progress.connect(self.on_update_progress)
                 gpx_to_layer.init_gpx_import(gpx_path)
-                if not self.stop_import:
+                if not STOP_IMPORT:
                     self.progress_dlg.setValue(i)
                 # fet layer fields once
                 if len(gpx_to_layer.final_features) > 0:
@@ -600,13 +615,14 @@ class ProcessCombine(QObject):
         )
 
         feature_list = self.gpx_to_feature_list(parm_store)
+
         if self.layer_fields is None:
             self.progress_dlg.blockSignals(True)
             self.progress_dlg.close()
             self.progress_dlg.blockSignals(False)
             return 0
-        if self.stop_import:
-            return None
+        if STOP_IMPORT:
+            return
         provider = final_layer.dataProvider()
 
         final_layer.startEditing()
@@ -627,14 +643,9 @@ class ProcessCombine(QObject):
         :return: None if the process is aborted or number_features is None
         :rtype: NoneType
         """
-        combine_text = QApplication.translate(
-            'ProcessCombine',
-            '<html>Combining features to create {} layer</html>'.
-                format(parm_store.layer_name)
-        )
-        self.progress.emit(combine_text)
+
         number_of_features = self.combine_features(parm_store)
-        if self.stop_import:
+        if STOP_IMPORT:
             abort_text = QApplication.translate(
                 'ProcessCombine',
                 '<html><b>The importing process is aborted!</b></html>'
@@ -659,9 +670,12 @@ class ProcessCombine(QObject):
         self.progress_dlg.cancel()
         end_text = QApplication.translate(
             'ProcessCombine',
-            '<html><b>Successfully imported {} features from {} gpx files!'
+            '<html><b>Successfully imported {} features from {} gpx files!<br>'
+            'You can view the result in {} layer.'
             '</b</html>'.format(
-                number_of_features, self.number_of_gpx_files
+                number_of_features,
+                self.number_of_gpx_files,
+                parm_store.layer_name
             )
         )
         self.progress.emit(end_text)

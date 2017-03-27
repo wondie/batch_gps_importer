@@ -1,6 +1,6 @@
 # Batch GPS Importer #
 
-Batch GPS Importer a QGIS plugins that imports multiple GPX files as a layer in QGIS layers panel and map canvas. 
+Batch GPS Importer a QGIS plugins that imports multiple GPX files as a layer in QGIS.
 
 ### Feature Lists ###
 

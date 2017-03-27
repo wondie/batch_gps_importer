@@ -1,527 +1,302 @@
 # -*- coding: utf-8 -*-
-"""
-/***************************************************************************
- Batch GPS Importer
-                                 A QGIS plugin
- GUI wrapper for Batch GPS Importer
-                             -------------------
-        begin                : 2017-03-18
-        copyright            : (C) 2017 by Wondimagegn Tesfaye Beshah
-        email                : wondim81@gmail.com
- ***************************************************************************/
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 3 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-"""
-import os.path
-from PyQt4.QtCore import QUrl, Qt
-from PyQt4.QtGui import (
-    QApplication,
-    QCheckBox,
-    QCursor,
-    QDialog,
-    QDialogButtonBox,
-    QFileDialog,
-    QLabel,
-    QPushButton,
-    QMessageBox,
-    QStandardItem,
-    QStandardItemModel
-)
 
-from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform
+# Form implementation generated from reading ui file 'gps_importer.ui'
+#
+# Created by: PyQt4 UI code generator 4.11.4
+#
+# WARNING! All changes made in this file will be lost!
 
-from ui_gps_importer import Ui_BatchGpsImporter
-from ..importer.process_import import (
-    ParamStore, ProcessCombine, GEOMETRY_TYPES, GPX_FIELDS
-)
-from .. import DYNAMIC_HELP, HOME, STATIC_HELP
-from help import StaticHelp, STATIC_HELP_FILE
+from PyQt4 import QtCore, QtGui
 
-class GpsImporter(QDialog, Ui_BatchGpsImporter):
-    """
-    A GUI class that enable users set parmeters to batch import gpx files.
-    """
-    def __init__(self, iface):
-        """
-        Initializes the user interface and properties.
-        :param iface: The QGis interface
-        :type iface: qgis.utils.iface
-        """
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
 
-        QDialog.__init__(self, iface.mainWindow())
-        self.iface = iface
-        self.canvas = self.iface.mapCanvas()
-        self.help_box_width = 206
-        self.curr_help_box_width = 0  # the width of the help box before hiding
-        self.setupUi(self)
-        self.field_items = {}
-        self.init_gui()
-        self.param_store = ParamStore()
-        self._valid_gpx_folder_path = None
-        self._invalid_gpx_folder_path = None
-        self._input_gpx_folder_path = None
-        self.excluded_fields = []
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
-        self.input_projection_cbo.setCrs(
-            QgsCoordinateReferenceSystem('EPSG:4326')
-        )
-        self.waypoint.setProperty('name', 'waypoints')
-        self.track.setProperty('name', 'tracks')
-        self.route.setProperty('name', 'routes')
-
+class Ui_BatchGpsImporter(object):
+    def setupUi(self, BatchGpsImporter):
+        BatchGpsImporter.setObjectName(_fromUtf8("BatchGpsImporter"))
+        BatchGpsImporter.setEnabled(True)
+        BatchGpsImporter.resize(587, 424)
+        self.horizontalLayout = QtGui.QHBoxLayout(BatchGpsImporter)
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.tab_widget = QtGui.QTabWidget(BatchGpsImporter)
+        self.tab_widget.setMinimumSize(QtCore.QSize(556, 0))
+        self.tab_widget.setObjectName(_fromUtf8("tab_widget"))
+        self.input_output_tab = QtGui.QWidget()
+        self.input_output_tab.setObjectName(_fromUtf8("input_output_tab"))
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self.input_output_tab)
+        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        self.gridLayout = QtGui.QGridLayout()
+        self.gridLayout.setVerticalSpacing(29)
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.no_scan_sub_folders_rbtn = QtGui.QRadioButton(self.input_output_tab)
+        self.no_scan_sub_folders_rbtn.setObjectName(_fromUtf8("no_scan_sub_folders_rbtn"))
+        self.gridLayout.addWidget(self.no_scan_sub_folders_rbtn, 1, 2, 1, 1)
+        self.label_6 = QtGui.QLabel(self.input_output_tab)
+        self.label_6.setObjectName(_fromUtf8("label_6"))
+        self.gridLayout.addWidget(self.label_6, 5, 0, 1, 1)
+        self.geometry_type_cbo = QtGui.QComboBox(self.input_output_tab)
+        self.geometry_type_cbo.setObjectName(_fromUtf8("geometry_type_cbo"))
+        self.gridLayout.addWidget(self.geometry_type_cbo, 4, 1, 1, 3)
+        self.route = QtGui.QCheckBox(self.input_output_tab)
+        self.route.setChecked(True)
+        self.route.setObjectName(_fromUtf8("route"))
+        self.gridLayout.addWidget(self.route, 2, 3, 1, 1)
+        self.input_gpx_file_btn = QtGui.QPushButton(self.input_output_tab)
+        self.input_gpx_file_btn.setObjectName(_fromUtf8("input_gpx_file_btn"))
+        self.gridLayout.addWidget(self.input_gpx_file_btn, 0, 3, 1, 1)
+        self.label = QtGui.QLabel(self.input_output_tab)
+        self.label.setObjectName(_fromUtf8("label"))
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+        self.label_11 = QtGui.QLabel(self.input_output_tab)
+        self.label_11.setObjectName(_fromUtf8("label_11"))
+        self.gridLayout.addWidget(self.label_11, 4, 0, 1, 1)
+        self.scan_sub_folders_rdb = QtGui.QRadioButton(self.input_output_tab)
+        self.scan_sub_folders_rdb.setChecked(True)
+        self.scan_sub_folders_rdb.setObjectName(_fromUtf8("scan_sub_folders_rdb"))
+        self.gridLayout.addWidget(self.scan_sub_folders_rdb, 1, 1, 1, 1)
+        self.label_3 = QtGui.QLabel(self.input_output_tab)
+        self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
+        self.input_gpx_folder = QtGui.QLineEdit(self.input_output_tab)
+        self.input_gpx_folder.setObjectName(_fromUtf8("input_gpx_folder"))
+        self.gridLayout.addWidget(self.input_gpx_folder, 0, 1, 1, 2)
+        self.input_projection_cbo = QgsProjectionSelectionWidget(self.input_output_tab)
+        self.input_projection_cbo.setMaximumSize(QtCore.QSize(16777215, 23))
+        self.input_projection_cbo.setObjectName(_fromUtf8("input_projection_cbo"))
+        self.gridLayout.addWidget(self.input_projection_cbo, 5, 1, 1, 3)
+        self.track = QtGui.QCheckBox(self.input_output_tab)
+        self.track.setChecked(True)
+        self.track.setObjectName(_fromUtf8("track"))
+        self.gridLayout.addWidget(self.track, 2, 1, 1, 1)
+        self.label_2 = QtGui.QLabel(self.input_output_tab)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.gridLayout.addWidget(self.label_2, 2, 0, 1, 1)
+        self.waypoint = QtGui.QCheckBox(self.input_output_tab)
+        self.waypoint.setChecked(True)
+        self.waypoint.setObjectName(_fromUtf8("waypoint"))
+        self.gridLayout.addWidget(self.waypoint, 2, 2, 1, 1)
+        self.layer_name_edit = QtGui.QLineEdit(self.input_output_tab)
+        self.layer_name_edit.setMaxLength(50)
+        self.layer_name_edit.setObjectName(_fromUtf8("layer_name_edit"))
+        self.gridLayout.addWidget(self.layer_name_edit, 3, 1, 1, 3)
+        self.label_8 = QtGui.QLabel(self.input_output_tab)
+        self.label_8.setObjectName(_fromUtf8("label_8"))
+        self.gridLayout.addWidget(self.label_8, 3, 0, 1, 1)
+        self.verticalLayout_2.addLayout(self.gridLayout)
+        self.tab_widget.addTab(self.input_output_tab, _fromUtf8(""))
+        self.validation_tab = QtGui.QWidget()
+        self.validation_tab.setObjectName(_fromUtf8("validation_tab"))
+        self.verticalLayout_3 = QtGui.QVBoxLayout(self.validation_tab)
+        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
+        self.gridLayout_2 = QtGui.QGridLayout()
+        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
+        self.invalid_gpx_folder = QtGui.QLineEdit(self.validation_tab)
+        self.invalid_gpx_folder.setObjectName(_fromUtf8("invalid_gpx_folder"))
+        self.gridLayout_2.addWidget(self.invalid_gpx_folder, 6, 1, 1, 2)
+        self.label_5 = QtGui.QLabel(self.validation_tab)
+        self.label_5.setWordWrap(True)
+        self.label_5.setObjectName(_fromUtf8("label_5"))
+        self.gridLayout_2.addWidget(self.label_5, 4, 0, 1, 1)
+        self.invalid_folder_btn = QtGui.QPushButton(self.validation_tab)
+        self.invalid_folder_btn.setObjectName(_fromUtf8("invalid_folder_btn"))
+        self.gridLayout_2.addWidget(self.invalid_folder_btn, 6, 3, 1, 1)
+        self.valid_folder_btn = QtGui.QPushButton(self.validation_tab)
+        self.valid_folder_btn.setObjectName(_fromUtf8("valid_folder_btn"))
+        self.gridLayout_2.addWidget(self.valid_folder_btn, 5, 3, 1, 1)
+        self.label_10 = QtGui.QLabel(self.validation_tab)
+        self.label_10.setObjectName(_fromUtf8("label_10"))
+        self.gridLayout_2.addWidget(self.label_10, 6, 0, 1, 1)
+        self.exclude_with_few_points = QtGui.QRadioButton(self.validation_tab)
+        self.exclude_with_few_points.setObjectName(_fromUtf8("exclude_with_few_points"))
+        self.buttonGroup_2 = QtGui.QButtonGroup(BatchGpsImporter)
+        self.buttonGroup_2.setObjectName(_fromUtf8("buttonGroup_2"))
+        self.buttonGroup_2.addButton(self.exclude_with_few_points)
+        self.gridLayout_2.addWidget(self.exclude_with_few_points, 4, 1, 1, 1)
+        self.no_exclude_few_points = QtGui.QRadioButton(self.validation_tab)
+        self.no_exclude_few_points.setObjectName(_fromUtf8("no_exclude_few_points"))
+        self.buttonGroup_2.addButton(self.no_exclude_few_points)
+        self.gridLayout_2.addWidget(self.no_exclude_few_points, 4, 2, 1, 1)
+        self.no_exclude_with_errors_rbtn = QtGui.QRadioButton(self.validation_tab)
+        self.no_exclude_with_errors_rbtn.setObjectName(_fromUtf8("no_exclude_with_errors_rbtn"))
+        self.buttonGroup = QtGui.QButtonGroup(BatchGpsImporter)
+        self.buttonGroup.setObjectName(_fromUtf8("buttonGroup"))
+        self.buttonGroup.addButton(self.no_exclude_with_errors_rbtn)
+        self.gridLayout_2.addWidget(self.no_exclude_with_errors_rbtn, 3, 2, 1, 1)
+        self.exclude_with_errors_rbtn = QtGui.QRadioButton(self.validation_tab)
+        self.exclude_with_errors_rbtn.setObjectName(_fromUtf8("exclude_with_errors_rbtn"))
+        self.buttonGroup.addButton(self.exclude_with_errors_rbtn)
+        self.gridLayout_2.addWidget(self.exclude_with_errors_rbtn, 3, 1, 1, 1)
+        self.label_4 = QtGui.QLabel(self.validation_tab)
+        self.label_4.setWordWrap(True)
+        self.label_4.setObjectName(_fromUtf8("label_4"))
+        self.gridLayout_2.addWidget(self.label_4, 3, 0, 1, 1)
+        self.valid_gpx_folder = QtGui.QLineEdit(self.validation_tab)
+        self.valid_gpx_folder.setObjectName(_fromUtf8("valid_gpx_folder"))
+        self.gridLayout_2.addWidget(self.valid_gpx_folder, 5, 1, 1, 2)
+        self.label_7 = QtGui.QLabel(self.validation_tab)
+        self.label_7.setObjectName(_fromUtf8("label_7"))
+        self.gridLayout_2.addWidget(self.label_7, 5, 0, 1, 1)
+        self.extent_box = QgsExtentGroupBox(self.validation_tab)
+        self.extent_box.setMaximumSize(QtCore.QSize(16777215, 150))
+        self.extent_box.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
+        self.extent_box.setFlat(False)
+        self.extent_box.setCheckable(True)
         self.extent_box.setChecked(False)
-        self.buttonBox.helpRequested.connect(self.on_show_static_help)
-        self.input_gpx_file_btn.clicked.connect(
-            lambda: self.file_dialog(self.input_gpx_folder)
-        )
-        self.input_gpx_folder.textChanged.connect(self.validate_folder_path)
-        self.valid_folder_btn.clicked.connect(
-            lambda: self.file_dialog(self.valid_gpx_folder)
-        )
-        self.valid_gpx_folder.textChanged.connect(self.validate_folder_path)
-        self.invalid_folder_btn.clicked.connect(
-            lambda: self.file_dialog(self.invalid_gpx_folder)
-        )
-        self.invalid_gpx_folder.textChanged.connect(self.validate_folder_path)
-        self.canvas.extentsChanged.connect(self.on_update_extent_box)
-        self.extent_box.clicked.connect(self.on_update_extent_box)
-        self.extent_box.collapsedStateChanged.connect(self.on_prevent_collapse)
-        self.dynamic_help_btn.clicked.connect(self.on_dynamic_help)
-        self.help_events()
+        self.extent_box.setProperty("collapsed", False)
+        self.extent_box.setProperty("syncGroup", _fromUtf8(""))
+        self.extent_box.setProperty("scrollOnExpand", False)
+        self.extent_box.setProperty("saveCollapsedState", False)
+        self.extent_box.setProperty("saveCheckedState", False)
+        self.extent_box.setObjectName(_fromUtf8("extent_box"))
+        self.gridLayout_2.addWidget(self.extent_box, 2, 1, 1, 3)
+        self.label_9 = QtGui.QLabel(self.validation_tab)
+        self.label_9.setWordWrap(True)
+        self.label_9.setObjectName(_fromUtf8("label_9"))
+        self.gridLayout_2.addWidget(self.label_9, 2, 0, 1, 1)
+        self.verticalLayout_3.addLayout(self.gridLayout_2)
+        self.tab_widget.addTab(self.validation_tab, _fromUtf8(""))
+        self.fields_tab = QtGui.QWidget()
+        self.fields_tab.setObjectName(_fromUtf8("fields_tab"))
+        self.verticalLayout_4 = QtGui.QVBoxLayout(self.fields_tab)
+        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
+        self.gridLayout_3 = QtGui.QGridLayout()
+        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
+        self.label_12 = QtGui.QLabel(self.fields_tab)
+        self.label_12.setObjectName(_fromUtf8("label_12"))
+        self.gridLayout_3.addWidget(self.label_12, 0, 0, 1, 1)
+        self.exclude_fields_groupbox = QtGui.QGroupBox(self.fields_tab)
+        self.exclude_fields_groupbox.setCheckable(True)
+        self.exclude_fields_groupbox.setObjectName(_fromUtf8("exclude_fields_groupbox"))
+        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.exclude_fields_groupbox)
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.exclude_fields_view = QtGui.QTreeView(self.exclude_fields_groupbox)
+        self.exclude_fields_view.setFrameShape(QtGui.QFrame.Box)
+        self.exclude_fields_view.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.exclude_fields_view.setAlternatingRowColors(False)
+        self.exclude_fields_view.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
+        self.exclude_fields_view.setObjectName(_fromUtf8("exclude_fields_view"))
+        self.horizontalLayout_2.addWidget(self.exclude_fields_view)
+        self.gridLayout_3.addWidget(self.exclude_fields_groupbox, 0, 1, 1, 1)
+        self.verticalLayout_4.addLayout(self.gridLayout_3)
+        spacerItem = QtGui.QSpacerItem(24, 200, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_4.addItem(spacerItem)
+        self.tab_widget.addTab(self.fields_tab, _fromUtf8(""))
+        self.log_tab = QtGui.QWidget()
+        self.log_tab.setObjectName(_fromUtf8("log_tab"))
+        self.verticalLayout_6 = QtGui.QVBoxLayout(self.log_tab)
+        self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
+        self.scrollArea = QtGui.QScrollArea(self.log_tab)
+        self.scrollArea.setFrameShape(QtGui.QFrame.NoFrame)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
+        self.scrollAreaWidgetContents = QtGui.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 528, 314))
+        self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
+        self.verticalLayout_5 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
+        self.progress_text_edit = QtGui.QTextEdit(self.scrollAreaWidgetContents)
+        self.progress_text_edit.setFrameShape(QtGui.QFrame.Box)
+        self.progress_text_edit.setFrameShadow(QtGui.QFrame.Sunken)
+        self.progress_text_edit.setTextInteractionFlags(QtCore.Qt.TextSelectableByKeyboard|QtCore.Qt.TextSelectableByMouse)
+        self.progress_text_edit.setObjectName(_fromUtf8("progress_text_edit"))
+        self.verticalLayout_5.addWidget(self.progress_text_edit)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.verticalLayout_6.addWidget(self.scrollArea)
+        self.tab_widget.addTab(self.log_tab, _fromUtf8(""))
+        self.tab = QtGui.QWidget()
+        self.tab.setObjectName(_fromUtf8("tab"))
+        self.verticalLayout_7 = QtGui.QVBoxLayout(self.tab)
+        self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
+        self.about_box = QtGui.QTextEdit(self.tab)
+        self.about_box.setFrameShape(QtGui.QFrame.Box)
+        self.about_box.setObjectName(_fromUtf8("about_box"))
+        self.verticalLayout_7.addWidget(self.about_box)
+        self.tab_widget.addTab(self.tab, _fromUtf8(""))
+        self.verticalLayout.addWidget(self.tab_widget)
+        self.buttonBox = QtGui.QDialogButtonBox(BatchGpsImporter)
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Help|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
+        self.verticalLayout.addWidget(self.buttonBox)
+        self.horizontalLayout.addLayout(self.verticalLayout)
+        self.dynamic_help_box = QtWebKit.QWebView(BatchGpsImporter)
+        self.dynamic_help_box.setEnabled(True)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.dynamic_help_box.sizePolicy().hasHeightForWidth())
+        self.dynamic_help_box.setSizePolicy(sizePolicy)
+        self.dynamic_help_box.setUrl(QtCore.QUrl(_fromUtf8("about:blank")))
+        self.dynamic_help_box.setRenderHints(QtGui.QPainter.HighQualityAntialiasing|QtGui.QPainter.SmoothPixmapTransform|QtGui.QPainter.TextAntialiasing)
+        self.dynamic_help_box.setObjectName(_fromUtf8("dynamic_help_box"))
+        self.horizontalLayout.addWidget(self.dynamic_help_box)
 
-    def init_gui(self):
-        """
-        Initializes the GUI.
-        """
-        self.populate_geometry_type()
-        self.populate_field_box()
-        self.rename_buttonbox()
-        self.add_dynamic_help_button()
-        self.hide_dynamic_help(on_load_hide=True)
-        self.hide_extent_buttons()
-        self.tab_widget.removeTab(3)
-        self.exclude_fields_view.setHeaderHidden(True)
-        self.exclude_fields_view.setColumnWidth(0, 150)
-        self.exclude_fields_groupbox.toggled.connect(
-            self.on_fields_group_box_toggled
-        )
+        self.retranslateUi(BatchGpsImporter)
+        self.tab_widget.setCurrentIndex(0)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), BatchGpsImporter.accept)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), BatchGpsImporter.reject)
+        QtCore.QMetaObject.connectSlotsByName(BatchGpsImporter)
 
-    def on_show_static_help(self):
-        static_help = StaticHelp(self)
-        help_url = QUrl()
-        help_path = os.path.join(STATIC_HELP, STATIC_HELP_FILE)
-        help_url.setPath(help_path)
-        static_help.help_view.load(help_url)
-        static_help.show()
+    def retranslateUi(self, BatchGpsImporter):
+        BatchGpsImporter.setWindowTitle(_translate("BatchGpsImporter", "Batch GPS Importer", None))
+        self.no_scan_sub_folders_rbtn.setText(_translate("BatchGpsImporter", "No", None))
+        self.label_6.setText(_translate("BatchGpsImporter", "Projection", None))
+        self.route.setText(_translate("BatchGpsImporter", "Route", None))
+        self.input_gpx_file_btn.setText(_translate("BatchGpsImporter", "Browse...", None))
+        self.label.setText(_translate("BatchGpsImporter", "GPX folder", None))
+        self.label_11.setText(_translate("BatchGpsImporter", "Geometry type", None))
+        self.scan_sub_folders_rdb.setText(_translate("BatchGpsImporter", "Yes", None))
+        self.label_3.setText(_translate("BatchGpsImporter", "Scan sub-folders", None))
+        self.track.setText(_translate("BatchGpsImporter", "Track", None))
+        self.label_2.setText(_translate("BatchGpsImporter", "GPX Format", None))
+        self.waypoint.setText(_translate("BatchGpsImporter", "Waypoint", None))
+        self.label_8.setText(_translate("BatchGpsImporter", "Layer name", None))
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.input_output_tab), _translate("BatchGpsImporter", "Input and Output", None))
+        self.label_5.setText(_translate("BatchGpsImporter", "Exclude with insufficient points", None))
+        self.invalid_folder_btn.setText(_translate("BatchGpsImporter", "Browse...", None))
+        self.valid_folder_btn.setText(_translate("BatchGpsImporter", "Browse...", None))
+        self.label_10.setText(_translate("BatchGpsImporter", "Invalid GPX folder", None))
+        self.exclude_with_few_points.setText(_translate("BatchGpsImporter", "Yes", None))
+        self.no_exclude_few_points.setText(_translate("BatchGpsImporter", "No", None))
+        self.no_exclude_with_errors_rbtn.setText(_translate("BatchGpsImporter", "No", None))
+        self.exclude_with_errors_rbtn.setText(_translate("BatchGpsImporter", "Yes", None))
+        self.label_4.setText(_translate("BatchGpsImporter", "Exclude with geometry error", None))
+        self.label_7.setText(_translate("BatchGpsImporter", "Valid GPX folder", None))
+        self.extent_box.setTitle(_translate("BatchGpsImporter", "Map extent (current: none)", None))
+        self.extent_box.setProperty("titleBase", _translate("BatchGpsImporter", "Map extent", None))
+        self.label_9.setText(_translate("BatchGpsImporter", "Exclude outside extent", None))
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.validation_tab), _translate("BatchGpsImporter", "Validation", None))
+        self.label_12.setText(_translate("BatchGpsImporter", "Choose layer fields", None))
+        self.exclude_fields_groupbox.setTitle(_translate("BatchGpsImporter", "Check All/ Uncheck All", None))
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.fields_tab), _translate("BatchGpsImporter", "Fields", None))
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.log_tab), _translate("BatchGpsImporter", "Log", None))
+        self.about_box.setHtml(_translate("BatchGpsImporter", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.5pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Batch GPS Importer</span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">Version 0.1.0</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Batch GPS Importer is a GPX file import automation plugin that converts multiple GPX files into a single layer with multiple features based on features in each gpx file. </span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Batch GPS Importer is developed and maintained by Wondimagegn Tesfaye Beshah. </span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">It is a software is free software under GNU General Public License.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Copyright © 2017 Wondimagegn Tesfaye Beshah. All rights reserved.</span></p></body></html>", None))
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab), _translate("BatchGpsImporter", "About", None))
 
-    def hide_extent_buttons(self):
-        """
-        Hides the extent box buttons as they are not necessary. The extent box
-        updates automatically on map zoom.
-        """
-        for button in self.extent_box.findChildren(QPushButton):
-            button.setHidden(True)
-            button.parent().setHidden(True)
-            button.deleteLater()
-            button.parent().deleteLater()
-
-    def help_events(self):
-        """
-        Connects help events to methods of showing help.
-        """
-        self.mousePressEvent = self.set_help_text
-
-    def set_help_text(self, event):
-        """
-        Help event listener that responds to mouse click on labels to show
-        dynamic help text.
-        :param event: The event
-        :type event: QMouseEvent
-        """
-        if not self.dynamic_help_box.isVisible():
-            return
-        widget = QApplication.widgetAt(QCursor.pos())
-        if isinstance(widget, QLabel):
-            text = widget.text()
-            self.load_html_from_text(text)
-
-    def load_html_from_text(self, text):
-        """
-        Loads html file by constructing the path using a clicked label.
-        :param text: The label text
-        :type text: String
-        """
-        self.dynamic_help_box.setHtml('')
-        file_name = text.replace(' ', '_').lower().replace('-', '_')
-        help_path = '{}/{}.html'.format(DYNAMIC_HELP, file_name)
-
-        if not os.path.isfile(help_path) and not os.path.isdir(DYNAMIC_HELP):
-            no_translation = QApplication.translate(
-                'GpsImporter', 'Sorry, the help is not translated '
-                               'to your language. Please contact us via '
-                               'wondim81@gmail.com to translate '
-                               'it to your language.'
-            )
-            self.dynamic_help_box.setHtml(no_translation)
-        help_url = QUrl()
-        help_url.setPath(help_path)
-        self.dynamic_help_box.load(help_url)
-
-    def add_dynamic_help_button(self):
-        """
-        Adds the dynamic help button.
-        """
-        self.dynamic_help_btn = QPushButton(
-            QApplication.translate(
-                'GpsImporter', 'Show Dynamic Help'
-            )
-        )
-        self.buttonBox.addButton(
-            self.dynamic_help_btn, QDialogButtonBox.ActionRole
-        )
-
-    def hide_dynamic_help(self, on_load_hide=False):
-        """
-        Hides the dynamic help button.
-        :param on_load_hide: Determins weather the method is called when the
-        GUI is loaded or not.
-        :type on_load_hide: Boolean
-        """
-        if not on_load_hide:
-            self.curr_help_box_width = self.dynamic_help_box.width()
-
-        self.dynamic_help_box.setVisible(False)
-        self.resize(self.width() - self.curr_help_box_width, self.height())
-
-        self.resize(self.width() - 30, self.height())
-        hide_text = QApplication.translate(
-            'GpsImporter', 'Show Dynamic Help'
-        )
-        self.dynamic_help_btn.setText(hide_text)
-
-    def show_dynamic_help(self):
-        """
-        Shows the dynamic help box.
-        """
-        self.dynamic_help_box.setVisible(True)
-
-        if self.curr_help_box_width > 0:
-            self.resize(self.width() + self.curr_help_box_width, self.height())
-            self.dynamic_help_box.resize(
-                self.curr_help_box_width, self.dynamic_help_box.height()
-            )
-        else:
-
-            self.resize(self.width() + self.help_box_width, self.height())
-
-            self.dynamic_help_box.resize(
-                self.help_box_width, self.dynamic_help_box.height()
-            )
-            first_info = QApplication.translate(
-                'GpsImporter', 'To read the description of each input here, '
-                               'click on any input label on the left side. '
-            )
-            self.dynamic_help_box.setHtml(first_info)
-        hide_text = QApplication.translate(
-            'GpsImporter', 'Hide Dynamic Help'
-        )
-        self.dynamic_help_btn.setText(hide_text)
-
-    def on_dynamic_help(self):
-        """
-        A slot raised when the show/hide dynamic help button is clicked.
-        """
-        if self.dynamic_help_box.isVisible():
-            self.hide_dynamic_help()
-        else:
-            self.show_dynamic_help()
-
-    def rename_buttonbox(self):
-        """
-        Rename the Ok and Cancel buttons to Import and Exit.
-        :return:
-        :rtype:
-        """
-        import_txt = QApplication.translate(
-            'GpsImporter', 'Import'
-        )
-        exit_txt = QApplication.translate(
-            'GpsImporter', 'Exit'
-        )
-        self.buttonBox.button(QDialogButtonBox.Ok).setText(import_txt)
-        self.buttonBox.button(QDialogButtonBox.Cancel).setText(exit_txt)
-
-    def on_update_progress(self, text):
-        """
-        A slot raised used to update the progress by emitting progress message.
-        :param text: The progress message.
-        :type text: String
-        """
-        QApplication.processEvents()
-
-        self.progress_text_edit.append(text)
-
-    def on_prevent_collapse(self):
-        """
-        Prevent the extent box collapse when the checkbox is clicked.
-        """
-        self.extent_box.setCollapsed(False)
-
-    def on_update_extent_box(self):
-        """
-        A slot raised to automatically update the bounding box coordinates when
-        the the map zoom level changes and when the extent box is enabled.
-        :return:
-        :rtype:
-        """
-        if not self.extent_box.isChecked():
-            return
-        try:
-            canvas_extent = self.canvas.extent()
-
-            transformer = QgsCoordinateTransform(
-                self.canvas.mapRenderer().destinationCrs(),
-                self.input_projection_cbo.crs()
-            )
-
-            transformer.setDestCRS(
-                self.input_projection_cbo.crs()
-            )
-            transformed_extent = transformer.transform(canvas_extent)
-
-            self.extent_box.setOriginalExtent(
-                transformed_extent,
-                QgsCoordinateReferenceSystem(
-                    self.input_projection_cbo.crs().authid()
-                )
-            )
-
-            self.extent_box.setOutputCrs(
-                QgsCoordinateReferenceSystem(
-                    self.input_projection_cbo.crs().authid()
-                )
-            )
-            self.extent_box.setOutputExtentFromOriginal()
-            self.extent_box.setCurrentExtent(
-                transformed_extent,
-                QgsCoordinateReferenceSystem(
-                    self.input_projection_cbo.crs().authid()
-                )
-            )
-        except Exception as ex:
-            pass
-
-    def populate_geometry_type(self):
-        """
-        Populate the geometry type combobox.
-        """
-        self.geometry_type_cbo.addItem('', None)
-        for key, value in GEOMETRY_TYPES.iteritems():
-            self.geometry_type_cbo.addItem(value, key)
-
-    def populate_field_box(self):
-        """
-        Populate the fields combobox.
-        """
-        model = QStandardItemModel(1, 0)
-        model.setColumnCount(2)
-        field_count = len(GPX_FIELDS)
-        half_count = int(field_count/2)
-        for i, item_text in enumerate(GPX_FIELDS.values()):
-            item = QStandardItem(item_text)
-            item.setCheckState(2)
-            item.setCheckable(True)
-            if i >= half_count:
-                model.setItem(i-half_count, 1, item)
-                self.field_items[item_text] = 1
-            else:
-                model.setItem(i, 0, item)
-                self.field_items[item_text] = 0
-        self.exclude_fields_view.setModel(model)
-        self.exclude_fields_view.model().itemChanged.connect(
-            self.on_fields_toggled
-        )
-
-    def on_fields_group_box_toggled(self):
-        """
-        A slot raised when the fields group box is checked or unchecked.
-        Removes the selection from all fields when unchecked and selects all
-        fields when checked.
-        """
-        for text, column in self.field_items.iteritems():
-            items = self.exclude_fields_view.model().findItems(
-                text, Qt.MatchExactly, column
-            )
-            for item in items:
-                if self.exclude_fields_groupbox.isChecked():
-                    item.setCheckState(Qt.Checked)
-                else:
-                    item.setCheckState(Qt.Unchecked)
-
-    def on_fields_toggled(self, item):
-        """
-        A slot raised when a field is checked or unchecked.
-        The field unchecked is added to excluded_fields list. If checked,
-        the field will be removed from the excluded_list.
-        :param item: The field item
-        :type item: QStandardItem
-        """
-        if item.checkState() == Qt.Unchecked:
-            self.excluded_fields.append(item.text())
-        else:
-            self.excluded_fields.remove(item.text())
-
-    def file_dialog(self, line_edit):
-        """
-        Displays a file dialog for a user to specify a source document
-        :param title: The title of the file dialog
-        :type title: String
-        """
-        # Get last path for supporting documents
-        title = QApplication.translate(
-            "GpsImporter",
-            "Select a Folder"
-        )
-        last_path = HOME
-        path = QFileDialog.getExistingDirectory(
-            self.iface.mainWindow(),
-            title,
-            last_path,
-            QFileDialog.ShowDirsOnly
-        )
-        if len(path) > 0:
-            line_edit.setText(path)
-
-        if line_edit == self.input_gpx_folder:
-            self._input_gpx_folder_path = path
-        if line_edit == self.valid_gpx_folder:
-            self._valid_gpx_folder_path = path
-        if line_edit == self.invalid_gpx_folder:
-            self._invalid_gpx_folder_path = path
-
-    def validate_folder_path(self, text):
-        """
-        Checks the folder path corresponds to a real folder.
-        :param text: The path
-        :type text: String
-        :return: None
-        :rtype: NoneType
-        """
-        if text == '':
-            return
-        if not os.path.isdir(text):
-            title = QApplication.translate('GpsImporter', 'Invalid Path')
-            message = QApplication.translate(
-                'GpsImporter', 'The folder is not valid.'
-            )
-            QMessageBox.critical(
-                self, title, message
-            )
-            # if invalid, set the earlier accepted path
-            if self.sender() == self.input_gpx_folder:
-                self.sender().setText(self._input_gpx_folder_path)
-            if self.sender() == self.valid_gpx_folder:
-                self.sender().setText(self._valid_gpx_folder_path)
-            if self.sender() == self.invalid_gpx_folder:
-                self.sender().setText(self._invalid_gpx_folder_path)
-
-    def set_input_value(self):
-        """
-        Sets the input values to the ParamStore properties.
-        """
-        self.param_store.input_path = self.input_gpx_folder.text()
-        self.param_store.geometry_type = self.geometry_type_cbo.itemData(
-            self.geometry_type_cbo.currentIndex()
-        )
-
-        feature_types = [
-            widget.property('name')
-            for widget in self.input_output_tab.findChildren(QCheckBox)
-            if widget.isChecked() and widget.property('name')
-            ]
-
-        self.param_store.feature_types = feature_types
-        epsg = self.input_projection_cbo.crs().authid()
-        if len(epsg.split(':')) > 0:
-            self.param_store.gpx_projection = epsg.split(':')[1]
-        self.param_store.exclude_with_error = self.exclude_with_errors_rbtn. \
-            isChecked()
-        self.param_store.extent_bound_enabled = self.extent_box.isChecked()
-        self.param_store.extent_bound = self.extent_box.outputExtent()
-
-        self.param_store.exclude_with_few_points = \
-            self.exclude_with_few_points.isChecked()
-        self.param_store.scan_sub_folders = \
-            self.scan_sub_folders_rdb.isChecked()
-        self.param_store.valid_gpx_folder = self.valid_gpx_folder.text()
-        self.param_store.invalid_gpx_folder = self.invalid_gpx_folder.text()
-        self.param_store.excluded_fields = self.excluded_fields
-
-        if len(self.layer_name_edit.text()) > 1:
-            self.param_store.layer_name = self.layer_name_edit.text()
-
-        self.param_store.iface = self.iface
-        self.param_store.set_required()
-
-    def validate_mandatory_inputs(self):
-        """
-        Validates mandatory inputs are filled.
-        :return: Return true if valid and false if not valid.
-        :rtype:
-        """
-        unfilled = []
-        for input_name, input_var in self.param_store.required.iteritems():
-            if input_var == '' or input_var is None:
-                unfilled.append(input_name)
-            elif isinstance(input_var, list) and len(input_var) < 1:
-                unfilled.append(input_name)
-
-        if len(unfilled) > 0:
-            title = QApplication.translate(
-                'GpsImporter', 'Mandatory Field Error')
-            message = QApplication.translate(
-                'GpsImporter', 'The following mandatory fields are empty:'
-                               '\n{}'.format(', '.join(unfilled))
-            )
-            QMessageBox.critical(
-                self, title, message
-            )
-            return False
-        return True
-
-    def accept(self):
-        """
-        A builtin slot raised when the dialog is accepted with the click of
-        the Import button. It starts the import process.
-        :return: None if mandatory inputs are not filled.
-        :rtype: NoneType
-        """
-        self.set_input_value()
-        if not self.validate_mandatory_inputs():
-            return
-        log_name = QApplication.translate(
-            'GpsImporter',
-            'Log'
-        )
-        self.tab_widget.insertTab(3, self.log_tab, log_name)
-        self.progress_text_edit.clear()
-
-        start_text = QApplication.translate(
-            'GpsImporter',
-            '<html><b>Started the importing from {}</b></html>'.format(
-                self.param_store.input_path
-            )
-        )
-
-        self.progress_text_edit.append(start_text)
-        self.tab_widget.setCurrentIndex(4)
-        self.tab_widget.setCurrentWidget(self.log_tab)
-        self.process = ProcessCombine(self.iface.mainWindow())
-        self.process.progress.connect(self.on_update_progress)
-        self.process.finish_import(self.param_store)
+from PyQt4 import QtWebKit
+from qgis.gui import QgsExtentGroupBox, QgsProjectionSelectionWidget

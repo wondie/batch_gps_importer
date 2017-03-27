@@ -21,9 +21,8 @@
 from PyQt4.QtGui import QAction
 from PyQt4.QtGui import QIcon
 
-import resources
-from ui.gps_importer import GpsImporter
-from . import PLUGIN_FOLDER
+from ui.gps_importer_starter import GpsImporter
+from . import PLUGIN_DIR
 
 
 class BatchGpsImporter(object):
@@ -44,26 +43,25 @@ class BatchGpsImporter(object):
         """
         Initializes the plugin GUI.
         """
-
         self.action = QAction(
-            QIcon(":/plugins/{}/images/batch.png".format(PLUGIN_FOLDER)),
-            "Batch GPS Importer", self.iface.mainWindow()
+            QIcon('{}/images/batch.png'.format(PLUGIN_DIR)),
+            'Batch GPS Importer', self.iface.mainWindow()
         )
-        self.action.setObjectName("gps_importer_action")
-        self.action.setWhatsThis("Configuration for Batch GPS Importer")
-        self.action.setStatusTip("Batch import GPX files")
+        self.action.setObjectName('gps_importer_action')
+        self.action.setWhatsThis('Configuration for Batch GPS Importer')
+        self.action.setStatusTip('Batch import GPX files')
         self.action.triggered.connect(self.run)
 
         # add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToVectorMenu("&Batch GPS Importer", self.action)
+        self.iface.addPluginToVectorMenu('&Batch GPS Importer', self.action)
 
     def unload(self):
         """
         Removes the plugin properly.
         """
         # remove the plugin menu item and icon
-        self.iface.removePluginMenu("&Batch GPS Importer", self.action)
+        self.iface.removePluginMenu('&Batch GPS Importer', self.action)
         self.iface.removeToolBarIcon(self.action)
         # disconnect form signal of the canvas
         self.action.triggered.disconnect(self.run)

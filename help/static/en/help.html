@@ -6,72 +6,104 @@
 </head>
 <body>
 <h1>Batch GPS Importer</h1>
-<h2>GPX Folder</h2>
+<h2>Input and Output</h2>
+<p>The <strong>Input and Output</strong> tab page contains all the necessary
+    information required to create a combined gpx layer from gpx files.
+    The image below illustrates the form fields of the tab.
+    In the image, the indicated fields that have astrix are required fields.
+</p>
+<img src="../../images/input_output_tab.png">
+<p>The sub-topics below explains each form fields of the tab page. </p>
+<h3>GPX Folder</h3>
 <p>Choose the folder in which the gpx files reside
     by clicking on the Browser button. </p>
-<h2>Scan Sub-folders</h2>
+<h3>Scan Sub-folders</h3>
 <p>Click on <strong>Yes</strong> to import gpx files in sub-folders or
     <strong>No</strong> to only import from the currently selected folder. </p>
-<h2>GPX Format</h2>
+<h3>GPX Format</h3>
 <p>Choose one GPX format which could be track, waypoint, or route.
-This is determined during the GPS data collection. </p>
-<h2>Layer Name</h2>
+    This is determined during the GPS data collection. </p>
+<h3>Layer Name</h3>
 <p>Specify a name for the output layer.
     If not specified, the default layer will be used.</p>
-<h2>Geometry Type</h2>
+<h3>Geometry Type</h3>
 <p>Choose the geometry type of the output Layer.
     It can be Polygon, Line or Point. If you choose Polygon and Line,
     only the first attributes of each feature will be used. For Point
     geometry type, all point attributes are captured. </p>
-<h2>Projection</h2>
+<h3>Projection</h3>
 <p>Choose the coordinate reference system used when collecting the GPS points.
     This will also be used as the layer projection. </p>
-<h2>Exclude Outside Extent</h2>
+<h2>Validation</h2>
+<p>The <strong>Validation</strong> tab enables you to filter out features with issues and map
+    extent. It enables you to also save both gpx files with valid and invalid
+    features based on the criteria you have supplied. The image below
+    illustrates all the form fields of the Validation tab.
+</p>
+<img src="../../images/validation_tab.png">
+<p>The sub-topics below explains each form fields of the tab page. </p>
+<h3>Exclude Outside Extent</h3>
 <p>When this extent box is activated, it automatically captures the extent of
     the map. When you click on the Import button, this extent will be used to
     crop other features outside the visible map extent. </p>
-<h2>Exclude with Geometry Errors</h2>
+<h3>Exclude with Geometry Errors</h3>
 <p>Choose to exclude or include features with geometry error. If you click
     Yes, features with geometry error will be excluded and the error message
     and the gpx files will be shown in the log tab. </p>
-<h2>Exclude with Insufficient Points</h2>
+<h3>Exclude with Insufficient Points</h3>
 <p>Exclude or include GPX features with insufficient point that is not
     enough to create a valid geometry. This filter is applicable for lines
-and polygons. For line, the minimum points required are 2. For polygon,
+    and polygons. For line, the minimum points required are 2. For polygon,
     the minimum required points are 3. </p>
 <p>If you click on the Yes radio button,
     features with points below the required number will be excluded.
     If you click on the No button, features with points below the
     required number will be included. This could lead to the presence features
     with no visible geometry.</p>
-<h2>Valid GPX Folder</h2>
+<h3>Valid GPX Folder</h3>
 <p>If you would like to filter out and keep the valid gpx files used in
     the output layer. Select a folder. If not specified,
     the valid gpx files will not be copied.</p>
-<h2>Invalid GPX Folder</h2>
+<h3>Invalid GPX Folder</h3>
 <p>If you would like to identify invalid gpx files that are not used in
     the output layer. Select a folder. If not specified,
     the invalid gpx files will not be copied.</p>
-<h2>Choose Layer Fields</h2>
+<h2>Fields</h2>
+<p>The <strong>Fields</strong> tab page contains the option to include and
+    exclude fields that are extracted from the GPX file and additional fields
+    added by Batch GPS Importer.</p>
+
+<h3>Choose Layer Fields</h3>
 <p>You can include or exclude layer fields that will be added in the map.
-If you remove the check of a field, it will not be included in the layer
-with also leads to the loss of information under that field.
+    If you remove the check of a field, it will not be included in the layer
+    with also leads to the loss of information under that field. 
+    The image below shows how you can include and exclude fields. 
 </p>
+<img src="../../images/choose_layer_fields.png">
 <p>By default, the id column will be added and it can't be removed.</p>
+<p>All fields except the feature_type and file_name are extracted from
+    the gpx file. </p>
+<h2>Starting the Import Process</h2>
+<p>Once you finish specifying the required form fields, you can start importing
+    the GPX features by clicking on the <strong>Import</strong> button as shown in the
+    image below.
+</p>
+<img src="../../images/start_importing.png">
+<p>Once you click on the import button, you will see a progress dialog and the
+    Log tab page appearing and showing the import progress as shown below.</p>
+<img src="../../images/importing_progress.PNG">
+<p>Once complete, you will see a success message and a new layer added to the
+    Layers panel as shown in the image below. </p>
+<img src="../../images/result.PNG">
 
-<!--working-->
-<!--waypoint - point-->
-<!--track - line-->
-<!--route - line-->
-<!--waypoint - polygon - check combine and disable-->
-<!--track - polygon - check combine and disable-->
-<!--route - polygon - check combine and disable-->
-
-<!--partly working-->
-<!--track - point - attributes repeated-->
-<!--route - point - attributes repeated or not fully accessed-->
-<!--waypoint - line - features and geometry are not linked-->
-
-
+<h2>Dynamic Help</h2>
+<p>Batch GPS Importer has included a dynamic help functionality in which you
+can view the description of each form field. To activate it, click on the
+<strong>Show Dynamic Help</strong> button located at the bottom. This will
+show the Dynamic Help box on the right side of the dialog as shown below.</p>
+<img src="../../images/dynamic_help_on.PNG">
+<p>Click on the label of each form fields when you want to read more
+    description about the field as shown below. </p>
+<img src="../../images/dynamic_help_viewing.png">
 </body>
 </html>
