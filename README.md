@@ -30,7 +30,7 @@ Batch GPS Importer a QGIS plugins that imports multiple GPX files as a layer in 
 
 1. Fork the repository
 2. Make a pull request
-3. After code review, your contirbution will be incorporated
+3. After code review, your contribution will be incorporated
 
 ### Documentation
 
