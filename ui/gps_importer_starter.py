@@ -33,6 +33,7 @@ from PyQt4.QtGui import (
     QStandardItem,
     QStandardItemModel
 )
+from PyQt4.QtWebKit import QWebSettings
 
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform
 
@@ -40,7 +41,7 @@ from gps_importer import Ui_BatchGpsImporter
 from ..importer.process_import import (
     ParamStore, ProcessCombine, GEOMETRY_TYPES, GPX_FIELDS
 )
-from .. import DYNAMIC_HELP, HOME, STATIC_HELP
+from .. import HOME, STATIC_HELP, EN_HELP
 from help_starter import StaticHelp, STATIC_HELP_FILE
 
 class GpsImporter(QDialog, Ui_BatchGpsImporter):
@@ -65,6 +66,8 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.init_gui()
         self._valid_gpx_folder_path = None
         self._invalid_gpx_folder_path = None
+        self._help_anchor = ''
+        self._help_text = ''
         self._input_gpx_folder_path = None
         self.excluded_fields = []
 
@@ -119,12 +122,15 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.extent_box.clicked.connect(self.on_update_extent_box)
         self.extent_box.collapsedStateChanged.connect(self.on_prevent_collapse)
         self.dynamic_help_btn.clicked.connect(self.on_dynamic_help)
+        self.dynamic_help_box.loadFinished.connect(self.on_help_loaded)
         self.mousePressEvent = self.set_help_text
 
     def on_show_static_help(self):
         static_help = StaticHelp(self)
         help_url = QUrl()
         help_path = os.path.join(STATIC_HELP, STATIC_HELP_FILE)
+        if not os.path.isfile(help_path) and not os.path.isdir(STATIC_HELP):
+            help_path = os.path.join(EN_HELP, STATIC_HELP_FILE)
         help_url.setPath(help_path)
         static_help.help_view.load(help_url)
         static_help.show()
@@ -161,20 +167,37 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         :type text: String
         """
         self.dynamic_help_box.setHtml('')
-        file_name = text.replace(' ', '_').lower().replace('-', '_')
-        help_path = '{}/{}.html'.format(DYNAMIC_HELP, file_name)
+        anchor_text = text.replace(' ', '_').lower().replace('-', '_')
+        file_name = 'help'
+        help_path = '{}/{}.html'.format(STATIC_HELP, file_name)
 
-        if not os.path.isfile(help_path) and not os.path.isdir(DYNAMIC_HELP):
-            no_translation = QApplication.translate(
-                'GpsImporter', 'Sorry, the help is not translated '
-                               'to your language. Please contact us via '
-                               'wondim81@gmail.com to translate '
-                               'it to your language.'
-            )
-            self.dynamic_help_box.setHtml(no_translation)
+        if not os.path.isfile(help_path) and not os.path.isdir(STATIC_HELP):
+            help_path = '{}/{}.html'.format(EN_HELP, file_name)
         help_url = QUrl()
         help_url.setPath(help_path)
+        self._help_anchor = anchor_text
+        self._help_text = text
+
+        # allow JavaScript to run
+        self.dynamic_help_box.page().settings().testAttribute(
+            QWebSettings.JavascriptEnabled
+        )
         self.dynamic_help_box.load(help_url)
+
+    def on_help_loaded(self, ok):
+        """
+        A slot raised when an HTML loading finishes.
+        :param ok: The success or failure of the load status.
+        True if successful.
+        :type ok: Boolean
+        """
+        if ok:
+            if self._help_anchor == '':
+                return
+
+            self.dynamic_help_box.page().mainFrame().scrollToAnchor(
+                self._help_anchor
+            )
 
     def add_dynamic_help_button(self):
         """
