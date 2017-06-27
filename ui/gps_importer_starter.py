@@ -405,11 +405,10 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
 
     def file_dialog(self, line_edit):
         """
-        Displays a file dialog for a user to specify a source document
-        :param title: The title of the file dialog
-        :type title: String
+        Displays a file dialog for a user to specify a GPX Folder.
+        :param line_edit: The line edit in which the folder is going to be set.
+        :type line_edit: QLineEdit
         """
-        # Get last path for supporting documents
         title = QApplication.translate(
             "GpsImporter",
             "Select a Folder"
@@ -462,6 +461,8 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         Sets the input values to the ParamStore properties.
         """
         self.param_store.input_path = self.input_gpx_folder.text()
+        self.param_store.file_name_prefix = self.file_name_prefix.text()
+        self.param_store.file_name_suffix = self.file_name_suffix.text()
         self.param_store.geometry_type = self.geometry_type_cbo.itemData(
             self.geometry_type_cbo.currentIndex()
         )

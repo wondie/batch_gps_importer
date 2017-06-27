@@ -72,6 +72,8 @@ class ParamStore(object):
         self.gpx_projection = None
         self.required = None
         self.extent_bound = None
+        self.file_name_prefix = None
+        self.file_name_suffix = None
         self.extent_bound_enabled = False
         self.exclude_with_error = False
         self.exclude_with_few_points = False
@@ -212,10 +214,10 @@ class GpxToFeature(QObject):
             return
         if len(self.gpx_data) < 1:
             return
-        self.create_polygon()
-        self.create_point()
-        self.create_line()
-
+        if self.feature_type == 'waypoints':
+            self.create_polygon()
+            self.create_point()
+            self.create_line()
         self.add_progress()
 
     def save_valid_folders(self):
@@ -254,16 +256,27 @@ class GpxToFeature(QObject):
             )
 
             if self.feature_type == 'waypoints':
+
                 field_attributes = self.extract_attributes(i)
                 point = qgs_geom.asMultiPoint()
                 self.gpx_data[point[0]] = field_attributes
             else:
+                # To prevent all tracks or routes in a file are treated as one
+                # feature clear the gpx_data.
+                self.gpx_data.clear()
                 points = qgs_geom.asMultiPolyline()
-                for point_row, point in enumerate(points[0]):
+
+                for point_row, single_point in enumerate(points[0]):
+
                     if STOP_IMPORT:
                         return
                     field_attributes = self.extract_attributes(point_row)
-                    self.gpx_data[point] = field_attributes
+                    self.gpx_data[single_point] = field_attributes
+            if self.feature_type != 'waypoints':
+                self.create_polygon()
+                self.create_point()
+                self.create_line()
+
 
     @staticmethod
     def extract_geometry(ogr_feature):
@@ -355,7 +368,7 @@ class GpxToFeature(QObject):
             # and only the first attributes
             if not self.validate_insufficient_points(self.gpx_data.keys(), 3):
                 return
-            # remove the ungroupped dictionary
+            # remove the ungroupped dictionary as polygon
             self.gpx_data.clear()
             if self.validate_geometry(poly_geom):
                 self.gpx_data[poly_geom] = attributes
@@ -425,11 +438,12 @@ class GpxToFeature(QObject):
         if self.exclude_with_few_points:
 
             if len(geoms) < point_counts:
-                self.error_type = QApplication.translate(
+                error_type = QApplication.translate(
                     'GpxToFeature',
-                    'Insufficient points to create a valid {}'.
-                        format(GEOMETRY_TYPES[self.geometry_type])
+                    'Insufficient points to create a valid'
                 )
+                self.error_type = '{} {}'.format(
+                    error_type, GEOMETRY_TYPES[self.geometry_type])
                 error_state = False
                 return error_state
             else:
@@ -440,8 +454,8 @@ class GpxToFeature(QObject):
     def validate_geometry(self, geom, suppress_errors=False):
         """
         Checks if geometry errors exists in a geometry.
-        :param geoms: The geometry to be validated.
-        :type geoms: QgsGeometry
+        :param geom: The geometry to be validated.
+        :type geom: QgsGeometry
         :param suppress_errors: If True, prevents error message from
         appearing in the log. Otherwise, if False, errors will be shown in
         the log.
@@ -466,11 +480,12 @@ class GpxToFeature(QObject):
 
     def validate_extent(self, extent_rect):
         """
-        It checks the supplied extent is the within the bounding box of the map.
+        It checks the supplied extent is the within the bounding box of the
+        map.
         :param extent_rect: The bonding box of the geometry.
         :type extent_rect: QgsRectangle
-        :return: A boolean showing the geometry is within the boundary with true
-         or outside the extent with false.
+        :return: A boolean showing the geometry is within the boundary with
+         true or outside the extent with false.
         :rtype: Boolean
         """
         if self.extent_bound_enabled:
@@ -483,7 +498,7 @@ class GpxToFeature(QObject):
             user_y_min = self.extent_bound.yMinimum()
             user_y_max = self.extent_bound.yMaximum()
             if x_min > user_x_min and y_min > user_y_min and \
-                            x_max < user_x_max and y_max < user_y_max:
+                    x_max < user_x_max and y_max < user_y_max:
                 return True
             else:
                 return False
@@ -566,7 +581,12 @@ class ProcessCombine(QObject):
             if not parm_store.scan_sub_folders:
                 if dir_path != parm_store.input_path:
                     continue
-            gpx_files = glob.glob('{}/*.gpx'.format(dir_path))
+
+            gpx_files = glob.glob(u'{0}/{1}*{2}.gpx'.format(
+                dir_path,
+                parm_store.file_name_prefix,
+                parm_store.file_name_suffix
+            ))
             gpx_count = len(gpx_files)
             if gpx_count == 0:
                 continue
