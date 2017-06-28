@@ -545,7 +545,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         )
         text_2 = QApplication.translate('GpsImporter', '</b></html>')
 
-        start_text = '{} {}{}'.format(
+        start_text = u'{} {}{}'.format(
             text_1, self.param_store.input_path, text_2
         )
 
