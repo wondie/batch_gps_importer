@@ -539,11 +539,14 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.tab_widget.insertTab(3, self.log_tab, log_name)
         self.progress_text_edit.clear()
 
-        start_text = QApplication.translate(
+        text_1 = QApplication.translate(
             'GpsImporter',
-            '<html><b>Started the importing from {}</b></html>'.format(
-                self.param_store.input_path
-            )
+            '<html><b>Started the importing from'
+        )
+        text_2 = QApplication.translate('GpsImporter', '</b></html>')
+
+        start_text = '{} {}{}'.format(
+            text_1, self.param_store.input_path, text_2
         )
 
         self.progress_text_edit.append(start_text)
