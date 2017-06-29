@@ -407,18 +407,17 @@ class GpxToFeature(QObject):
         """
         if len(self.final_features) == 0:
             if self.error_type is not None:
-                error_message = QApplication.translate(
-                    'GpxToFeature',
-                    '{} in {}'.format(
-                        self.error_type, self.gpx_file_name
-                    )
+                text_in = QApplication.translate('GpxToFeature', 'in')
+                error_message = u'{} {} {}'.format(
+                    self.error_type, text_in, self.gpx_file_name
                 )
                 self.progress.emit(error_message)
         else:
-            success_message = QApplication.translate(
+            message = QApplication.translate(
                 'GpxToFeature',
-                'Created feature(s) for {}'.format(self.gpx_file_name)
+                'Created feature(s) for'
             )
+            success_message = u'{} {}'.format(message, self.gpx_file_name)
             self.progress.emit(success_message)
 
     def validate_insufficient_points(self, geoms, point_counts):
@@ -442,7 +441,7 @@ class GpxToFeature(QObject):
                     'GpxToFeature',
                     'Insufficient points to create a valid'
                 )
-                self.error_type = '{} {}'.format(
+                self.error_type = u'{} {}'.format(
                     error_type, GEOMETRY_TYPES[self.geometry_type])
                 error_state = False
                 return error_state
@@ -471,9 +470,8 @@ class GpxToFeature(QObject):
             else:
                 if not suppress_errors:
                     error_desc = [er.what() for er in errors]
-                    self.error_type = QApplication.translate(
-                        'GpxToFeature', ' '.join(error_desc)
-                    )
+                    self.error_type = u' '.join(error_desc)
+
                 return False
         else:
             return True
@@ -600,9 +598,9 @@ class ProcessCombine(QObject):
                 gpx_path = os.path.join(dir_path, gpx_file)
                 parent_path = os.path.dirname(parm_store.input_path)
                 relative_path = os.path.relpath(gpx_path, parent_path)
-                text = QApplication.translate(
-                    'ProcessCombine', 'Scanning {}'.format(relative_path)
-                )
+                scanning = QApplication.translate('ProcessCombine', u'Scanning')
+                text = u'{} {}'.format(scanning, relative_path)
+
                 self.progress_dlg.setLabelText(text)
 
                 gpx_to_layer = GpxToFeature(parm_store)
@@ -688,15 +686,15 @@ class ProcessCombine(QObject):
         self.copy_gpx_files(INVALID_GPX_FILES, parm_store.invalid_gpx_folder)
 
         self.progress_dlg.cancel()
-        end_text = QApplication.translate(
-            'ProcessCombine',
-            '<html><b>Successfully imported {} features from {} gpx files!<br>'
-            'You can view the result in {} layer.'
-            '</b</html>'.format(
-                number_of_features,
-                self.number_of_gpx_files,
-                parm_store.layer_name
-            )
+        a = QApplication.translate('ProcessCombine',
+                                   '<html><b>Successfully imported')
+        c = QApplication.translate('ProcessCombine', 'features from')
+        d = QApplication.translate('ProcessCombine', 'gpx files!<br>')
+        e = QApplication.translate('ProcessCombine', 'You can view the result in')
+        g = QApplication.translate('ProcessCombine', 'layer.</b</html>')
+        end_text = u'{} {} {} {} {} {} {} {}'.format(
+            a, number_of_features, c, self.number_of_gpx_files, d, e,
+            parm_store.layer_name, g
         )
         self.progress.emit(end_text)
 
