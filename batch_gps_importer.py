@@ -18,6 +18,8 @@
  *                                                                         *
  ***************************************************************************/
 """
+from PyQt4.QtCore import QSettings, QFileInfo, QTranslator, qVersion, \
+    QCoreApplication
 from PyQt4.QtGui import QAction
 from PyQt4.QtGui import QIcon
 
@@ -38,6 +40,19 @@ class BatchGpsImporter(object):
         """
         self.iface = iface
         self.importer = None
+        # Setup locale
+
+        locale_path = ''
+        locale = QSettings().value("locale/userLocale")[0:2]
+        if QFileInfo(PLUGIN_DIR).exists():
+            # Replace forward slash with backslash
+            # PLUGIN_DIR = PLUGIN_DIR.replace("\\", "/")
+            locale_path = PLUGIN_DIR + "/i18n/batch_gps_importer_%s.qm" % (locale,)
+        if QFileInfo(locale_path).exists():
+            self.translator = QTranslator()
+            self.translator.load(locale_path)
+            if qVersion() > '4.3.3':
+                QCoreApplication.installTranslator(self.translator)
 
     def initGui(self):
         """
