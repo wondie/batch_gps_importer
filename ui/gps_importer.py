@@ -26,7 +26,7 @@ class Ui_BatchGpsImporter(object):
     def setupUi(self, BatchGpsImporter):
         BatchGpsImporter.setObjectName(_fromUtf8("BatchGpsImporter"))
         BatchGpsImporter.setEnabled(True)
-        BatchGpsImporter.resize(587, 424)
+        BatchGpsImporter.resize(587, 437)
         self.horizontalLayout = QtGui.QHBoxLayout(BatchGpsImporter)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.verticalLayout = QtGui.QVBoxLayout()
@@ -177,11 +177,11 @@ class Ui_BatchGpsImporter(object):
         self.extent_box.setFlat(False)
         self.extent_box.setCheckable(True)
         self.extent_box.setChecked(False)
-        self.extent_box.setCollapsed(False)
-        self.extent_box.setSyncGroup(_fromUtf8(""))
-        self.extent_box.setScrollOnExpand(False)
-        self.extent_box.setSaveCollapsedState(False)
-        self.extent_box.setSaveCheckedState(False)
+        self.extent_box.setProperty("collapsed", False)
+        self.extent_box.setProperty("syncGroup", _fromUtf8(""))
+        self.extent_box.setProperty("scrollOnExpand", False)
+        self.extent_box.setProperty("saveCollapsedState", False)
+        self.extent_box.setProperty("saveCheckedState", False)
         self.extent_box.setObjectName(_fromUtf8("extent_box"))
         self.gridLayout_2.addWidget(self.extent_box, 2, 1, 1, 3)
         self.label_9 = QtGui.QLabel(self.validation_tab)
@@ -225,7 +225,7 @@ class Ui_BatchGpsImporter(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 528, 314))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 528, 327))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
@@ -300,7 +300,7 @@ class Ui_BatchGpsImporter(object):
         self.label_4.setText(_translate("BatchGpsImporter", "Exclude with geometry error", None))
         self.label_7.setText(_translate("BatchGpsImporter", "Valid GPX folder", None))
         self.extent_box.setTitle(_translate("BatchGpsImporter", "Map extent (current: none)", None))
-        self.extent_box.setTitleBase(_translate("BatchGpsImporter", "Map extent", None))
+        self.extent_box.setProperty("titleBase", _translate("BatchGpsImporter", "Map extent", None))
         self.label_9.setText(_translate("BatchGpsImporter", "Exclude outside extent", None))
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.validation_tab), _translate("BatchGpsImporter", "Validation", None))
         self.label_12.setText(_translate("BatchGpsImporter", "Choose layer fields", None))
@@ -312,7 +312,7 @@ class Ui_BatchGpsImporter(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.5pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Batch GPS Importer</span></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">Version 0.1.1</span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">Version 0.2.0</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Batch GPS Importer is a GPX file import automation plugin that converts multiple GPX files into a single layer with multiple features based on features in each gpx file. </span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
@@ -323,6 +323,7 @@ class Ui_BatchGpsImporter(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Copyright © 2017 </span><a href=\"http://www.datumhelper.com/\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Wondimagegn Tesfaye Beshah</span></a><span style=\" font-size:8pt;\">. All rights reserved.</span></p></body></html>", None))
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab), _translate("BatchGpsImporter", "About", None))
+
 
 from PyQt4 import QtWebKit
 from qgis.gui import QgsExtentGroupBox, QgsProjectionSelectionWidget

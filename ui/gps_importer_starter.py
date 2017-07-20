@@ -39,7 +39,7 @@ from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform
 
 from gps_importer import Ui_BatchGpsImporter
 from ..importer.process_import import (
-    ParamStore, ProcessCombine, GEOMETRY_TYPES, GPX_FIELDS
+    ParamStore, ProcessCombine, GPX_FIELDS
 )
 from .. import HOME, STATIC_HELP, EN_HELP
 from help_starter import StaticHelp, STATIC_HELP_FILE
@@ -348,7 +348,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         Populate the geometry type combobox.
         """
         self.geometry_type_cbo.addItem('', None)
-        for key, value in GEOMETRY_TYPES.iteritems():
+        for key, value in self.param_store.geometry_types.iteritems():
             self.geometry_type_cbo.addItem(value, key)
 
     def populate_field_box(self):

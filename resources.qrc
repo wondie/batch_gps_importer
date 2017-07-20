@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/plugins/batch_gps_importer" >
-     <file>images/icon.png</file>
-      <file>images/batch.png</file>
-  </qresource>
-</RCC>

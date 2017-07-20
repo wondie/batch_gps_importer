@@ -39,15 +39,14 @@ from qgis.core import (
 
 from osgeo import ogr
 from gpx_util import GpxUtil
+
 VALID_GPX_FILES = []
 INVALID_GPX_FILES = []
 ID_NUMBER = 0
 FEATURE_TYPES = OrderedDict([
     (u'tracks', 'Track'), (u'waypoints', 'Waypoint'), (u'routes', 'Routes')
 ])
-GEOMETRY_TYPES = OrderedDict([
-    ('Polygon', 'Polygon'), ('Point', 'Point'), ('Linestring', 'Line')
-])
+
 GPX_FIELDS = OrderedDict([
     ('ele', 'elevation'), ('name', 'name'), ('cmt', 'comment'),
     ('desc', 'description'), ('url', 'url'), ('urlname', 'url_name'),
@@ -57,11 +56,13 @@ GPX_FIELDS = OrderedDict([
 ])
 STOP_IMPORT = False
 
+
 class ParamStore(object):
     """
     Stores parameters and required fields of Batch GPX Importer. It servers
     both the Import Initializer class Process Combine and GPXToFeature.
     """
+
     def __init__(self):
         """
         Initializes the parameter properties.
@@ -84,6 +85,16 @@ class ParamStore(object):
             'ParamStore', 'combined_gpx'
         )
         self.excluded_fields = []
+        polygon_str = QApplication.translate('ParamStore', 'Polygon')
+        point_str = QApplication.translate('ParamStore', 'Point')
+        line_str = QApplication.translate('ParamStore', 'Line')
+
+        self.geometry_types = OrderedDict([
+            ('Polygon', polygon_str),
+            ('Point', point_str),
+            ('Linestring', line_str)
+        ])
+
         self.iface = None
 
     def set_required(self):
@@ -118,6 +129,7 @@ class GpxToFeature(QObject):
         """
         self.iface = param_store.iface
         QObject.__init__(self, self.iface.mainWindow())
+        self.param_store = param_store
         self.map_canvas = self.iface.mapCanvas()
         self.input_path = param_store.input_path
         self.feature_types = param_store.feature_types
@@ -146,7 +158,7 @@ class GpxToFeature(QObject):
         self._point_attributes = OrderedDict()
         self._point_row = 0
         self.feature_points = {
-            'tracks':'trkpt', 'routes':'rtept', 'waypoints':'wpt'
+            'tracks': 'trkpt', 'routes': 'rtept', 'waypoints': 'wpt'
         }
         self.xml_feature_types = {
             'tracks': 'trk', 'routes': 'rte', 'waypoints': 'wpt'
@@ -277,7 +289,6 @@ class GpxToFeature(QObject):
                 self.create_point()
                 self.create_line()
 
-
     @staticmethod
     def extract_geometry(ogr_feature):
         """
@@ -317,7 +328,7 @@ class GpxToFeature(QObject):
             elif original_field == 'feature_type':
                 field_attributes['feature_type'] = self.feature_type
             elif original_field == 'file_name':
-                    field_attributes['file_name'] = self.gpx_file_name
+                field_attributes['file_name'] = self.gpx_file_name
             else:
                 field_attributes[final_field] = None
         return field_attributes
@@ -442,7 +453,8 @@ class GpxToFeature(QObject):
                     'Insufficient points to create a valid'
                 )
                 self.error_type = u'{} {}'.format(
-                    error_type, GEOMETRY_TYPES[self.geometry_type])
+                    error_type,
+                    self.param_store.geometry_types[self.geometry_type])
                 error_state = False
                 return error_state
             else:
@@ -496,7 +508,7 @@ class GpxToFeature(QObject):
             user_y_min = self.extent_bound.yMinimum()
             user_y_max = self.extent_bound.yMaximum()
             if x_min > user_x_min and y_min > user_y_min and \
-                    x_max < user_x_max and y_max < user_y_max:
+                            x_max < user_x_max and y_max < user_y_max:
                 return True
             else:
                 return False
@@ -598,7 +610,8 @@ class ProcessCombine(QObject):
                 gpx_path = os.path.join(dir_path, gpx_file)
                 parent_path = os.path.dirname(parm_store.input_path)
                 relative_path = os.path.relpath(gpx_path, parent_path)
-                scanning = QApplication.translate('ProcessCombine', u'Scanning')
+                scanning = QApplication.translate('ProcessCombine',
+                                                  u'Scanning')
                 text = u'{} {}'.format(scanning, relative_path)
 
                 self.progress_dlg.setLabelText(text)
@@ -690,7 +703,8 @@ class ProcessCombine(QObject):
                                    '<html><b>Successfully imported')
         c = QApplication.translate('ProcessCombine', 'features from')
         d = QApplication.translate('ProcessCombine', 'gpx files!<br>')
-        e = QApplication.translate('ProcessCombine', 'You can view the result in')
+        e = QApplication.translate('ProcessCombine',
+                                   'You can view the result in')
         g = QApplication.translate('ProcessCombine', 'layer.</b</html>')
         end_text = u'{} {} {} {} {} {} {} {}'.format(
             a, number_of_features, c, self.number_of_gpx_files, d, e,

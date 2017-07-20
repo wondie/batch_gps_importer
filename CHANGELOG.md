@@ -5,7 +5,7 @@ All the major changes of the Batch GPS Importer is documented in this file.
 ## [0.2.0] - 2017-06-27
 
 ### Added
-- **Language**: Added Russian Language. Thank you very much, Nicolas!
+- **Language**: Added Russian Language. Thank you very much, Nikolai!
 - **GPX Feature Identification**: Creates separate features for each group of tracks and routes in the same file.
 - **File search**: Added fields to search using file prefix and suffix.
 
