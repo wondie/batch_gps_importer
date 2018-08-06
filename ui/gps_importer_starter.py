@@ -19,30 +19,29 @@
  ***************************************************************************/
 """
 import os.path
-from PyQt4.QtCore import QUrl, Qt
-from PyQt4.QtGui import (
+from PyQt5.QtCore import QUrl, Qt
+from PyQt5.QtGui import QCursor, QStandardItem, QStandardItemModel
+from PyQt5.QtWidgets import (
     QApplication,
     QCheckBox,
-    QCursor,
+
     QDialog,
     QDialogButtonBox,
     QFileDialog,
     QLabel,
     QPushButton,
-    QMessageBox,
-    QStandardItem,
-    QStandardItemModel
+    QMessageBox
 )
-from PyQt4.QtWebKit import QWebSettings
+from PyQt5.QtWebKit import QWebSettings
 
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform
 
-from gps_importer import Ui_BatchGpsImporter
+from .gps_importer import Ui_BatchGpsImporter
 from ..importer.process_import import (
     ParamStore, ProcessCombine, GPX_FIELDS
 )
 from .. import HOME, STATIC_HELP, EN_HELP
-from help_starter import StaticHelp, STATIC_HELP_FILE
+from .help_starter import StaticHelp, STATIC_HELP_FILE
 
 class GpsImporter(QDialog, Ui_BatchGpsImporter):
     """
@@ -348,7 +347,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         Populate the geometry type combobox.
         """
         self.geometry_type_cbo.addItem('', None)
-        for key, value in self.param_store.geometry_types.iteritems():
+        for key, value in self.param_store.geometry_types.items():
             self.geometry_type_cbo.addItem(value, key)
 
     def populate_field_box(self):
@@ -380,7 +379,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         Removes the selection from all fields when unchecked and selects all
         fields when checked.
         """
-        for text, column in self.field_items.iteritems():
+        for text, column in self.field_items.items():
             items = self.exclude_fields_view.model().findItems(
                 text, Qt.MatchExactly, column
             )
@@ -503,7 +502,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         :rtype:
         """
         unfilled = []
-        for input_name, input_var in self.param_store.required.iteritems():
+        for input_name, input_var in self.param_store.required.items():
             if input_var == '' or input_var is None:
                 unfilled.append(input_name)
             elif isinstance(input_var, list) and len(input_var) < 1:

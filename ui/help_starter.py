@@ -18,9 +18,9 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtGui import QDialog
+from PyQt5.QtWidgets import QDialog
 
-from help import Ui_StaticHelp
+from .help import Ui_StaticHelp
 STATIC_HELP_FILE = 'help.html'
 class StaticHelp(QDialog, Ui_StaticHelp):
     def __init__(self, parent):

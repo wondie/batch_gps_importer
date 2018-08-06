@@ -22,23 +22,23 @@ import glob
 import shutil
 from collections import OrderedDict
 import os
-from PyQt4.QtCore import QObject, QVariant, pyqtSignal
+from PyQt5.QtCore import QObject, QVariant, pyqtSignal
 
-from PyQt4.QtGui import QApplication, QLabel, QProgressDialog
+from PyQt5.QtWidgets import QApplication, QLabel, QProgressDialog
 
 from qgis.core import (
     QgsGeometry,
     QgsFeature,
     QgsPoint,
-    QgsPointV2,
+   
     QgsVectorLayer,
     QgsRectangle,
     QgsField,
-    QgsMapLayerRegistry
+    QgsProject
 )
 
 from osgeo import ogr
-from gpx_util import GpxUtil
+from .gpx_util import GpxUtil
 
 VALID_GPX_FILES = []
 INVALID_GPX_FILES = []
@@ -318,7 +318,7 @@ class GpxToFeature(QObject):
         else:
             current_attributes = OrderedDict()
         QApplication.processEvents()
-        for original_field, final_field in GPX_FIELDS.iteritems():
+        for original_field, final_field in GPX_FIELDS.items():
             if final_field in self.excluded_fields:
                 continue
             if original_field in current_attributes.keys():
@@ -355,7 +355,7 @@ class GpxToFeature(QObject):
         """
         if self.geometry_type == 'Point':
             invalid_geom = []
-            for points, attributes in self.gpx_data.iteritems():
+            for points, attributes in self.gpx_data.items():
                 QApplication.processEvents()
                 point_geom = QgsGeometry.fromPoint(points)
                 # error message is suppressed for points to improve performance
@@ -663,7 +663,7 @@ class ProcessCombine(QObject):
         final_layer.commitChanges()
 
         final_layer.updateExtents()
-        QgsMapLayerRegistry.instance().addMapLayer(final_layer)
+        QgsProject.instance().addMapLayer(final_layer)
         return len(feature_list)
 
     def finish_import(self, parm_store):

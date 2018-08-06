@@ -1,8 +1,8 @@
-from PyQt4.QtCore import QSettings
+from PyQt5.QtCore import QSettings
 
 
 def classFactory(iface):
-  from batch_gps_importer import BatchGpsImporter
+  from .batch_gps_importer import BatchGpsImporter
   return BatchGpsImporter(iface)
 
 from os.path import expanduser
