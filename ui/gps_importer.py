@@ -215,7 +215,7 @@ class Ui_BatchGpsImporter(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 109, 109))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 528, 327))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
