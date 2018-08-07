@@ -259,7 +259,7 @@ class Ui_BatchGpsImporter(object):
         self.horizontalLayout.addWidget(self.dynamic_help_box)
 
         self.retranslateUi(BatchGpsImporter)
-        self.tab_widget.setCurrentIndex(4)
+        self.tab_widget.setCurrentIndex(0)
         self.buttonBox.accepted.connect(BatchGpsImporter.accept)
         self.buttonBox.rejected.connect(BatchGpsImporter.reject)
         QtCore.QMetaObject.connectSlotsByName(BatchGpsImporter)
@@ -318,5 +318,5 @@ class Ui_BatchGpsImporter(object):
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab), _translate("BatchGpsImporter", "About"))
 
 from PyQt5 import QtWebKitWidgets
-from qgsextentgroupbox import QgsExtentGroupBox
-from qgsprojectionselectionwidget import QgsProjectionSelectionWidget
+from qgis.gui import QgsExtentGroupBox
+from qgis.gui import QgsProjectionSelectionWidget

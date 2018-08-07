@@ -168,10 +168,10 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.dynamic_help_box.setHtml('')
         anchor_text = text.replace(' ', '_').lower().replace('-', '_')
         file_name = 'help'
-        help_path = u'{}/{}.html'.format(STATIC_HELP, file_name)
+        help_path = '{}/{}.html'.format(STATIC_HELP, file_name)
 
         if not os.path.isfile(help_path) and not os.path.isdir(STATIC_HELP):
-            help_path = u'{}/{}.html'.format(EN_HELP, file_name)
+            help_path = '{}/{}.html'.format(EN_HELP, file_name)
         help_url = QUrl()
         help_url.setPath(help_path)
         self._help_anchor = anchor_text
@@ -544,7 +544,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         )
         text_2 = QApplication.translate('GpsImporter', '</b></html>')
 
-        start_text = u'{} {}{}'.format(
+        start_text = '{} {}{}'.format(
             text_1, self.param_store.input_path, text_2
         )
 

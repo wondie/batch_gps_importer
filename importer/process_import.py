@@ -44,7 +44,7 @@ VALID_GPX_FILES = []
 INVALID_GPX_FILES = []
 ID_NUMBER = 0
 FEATURE_TYPES = OrderedDict([
-    (u'tracks', 'Track'), (u'waypoints', 'Waypoint'), (u'routes', 'Routes')
+    ('tracks', 'Track'), ('waypoints', 'Waypoint'), ('routes', 'Routes')
 ])
 
 GPX_FIELDS = OrderedDict([
@@ -184,17 +184,18 @@ class GpxToFeature(QObject):
                 for feature_type in self.feature_types:
                     if STOP_IMPORT:
                         return
-                    self.feature_type = feature_type.encode('utf-8')
+                    # self.feature_type = feature_type.encode('utf-8')
+                    self.feature_type = feature_type
                     self.ogr_layer = data_source.GetLayerByName(
                         self.feature_type
                     )
 
                     if self.ogr_layer.GetFeatureCount() > 0:
-                        try:
-                            self.gpx_to_point_list()
-                        except Exception as ex:
-                            self.error_type = ex
-                            self.add_progress()
+                        # try:
+                        self.gpx_to_point_list()
+                        # except Exception as ex:
+                        #     self.error_type = ex
+                        #     self.add_progress()
                         if STOP_IMPORT:
                             return
                         self.save_valid_folders()
@@ -261,6 +262,7 @@ class GpxToFeature(QObject):
             if ogr_feature is None:
                 continue
             qgs_geom = self.extract_geometry(ogr_feature)
+
             if qgs_geom is None:
                 continue
             self._point_attributes = self.gpx_util.gpx_point_attributes(
@@ -284,6 +286,7 @@ class GpxToFeature(QObject):
                         return
                     field_attributes = self.extract_attributes(point_row)
                     self.gpx_data[single_point] = field_attributes
+
             if self.feature_type != 'waypoints':
                 self.create_polygon()
                 self.create_point()
@@ -338,8 +341,8 @@ class GpxToFeature(QObject):
         Creates a line feature.
         """
         if self.geometry_type == 'Linestring':
-            line_geom = QgsGeometry.fromPolyline(self.gpx_data.keys())
-            attributes = self.gpx_data.values()[0]
+            line_geom = QgsGeometry.fromPolylineXY(self.gpx_data.keys())
+            attributes = list(self.gpx_data.values())[0]
             # validate_insufficient_points
             if not self.validate_insufficient_points(self.gpx_data.keys(), 2):
                 return
@@ -347,7 +350,7 @@ class GpxToFeature(QObject):
             self.gpx_data.clear()
             if self.validate_geometry(line_geom):
                 self.gpx_data[line_geom] = attributes
-                self.create_feature(line_geom, self.gpx_data.values()[0])
+                self.create_feature(line_geom, list(self.gpx_data.values())[0])
 
     def create_point(self):
         """
@@ -357,7 +360,7 @@ class GpxToFeature(QObject):
             invalid_geom = []
             for points, attributes in self.gpx_data.items():
                 QApplication.processEvents()
-                point_geom = QgsGeometry.fromPoint(points)
+                point_geom = QgsGeometry.fromPointXY(points)
                 # error message is suppressed for points to improve performance
                 if self.validate_geometry(point_geom, suppress_errors=True):
                     self.create_feature(point_geom, attributes)
@@ -373,8 +376,8 @@ class GpxToFeature(QObject):
         Creates a polygon feature.
         """
         if self.geometry_type == 'Polygon':
-            poly_geom = QgsGeometry.fromPolygon([self.gpx_data.keys()])
-            attributes = self.gpx_data.values()[0]
+            poly_geom = QgsGeometry.fromPolygonXY([list(self.gpx_data.keys())])
+            attributes = list(self.gpx_data.values())[0]
             # update the gpx_data to contain polygon geometry as a key and
             # and only the first attributes
             if not self.validate_insufficient_points(self.gpx_data.keys(), 3):
@@ -385,7 +388,7 @@ class GpxToFeature(QObject):
                 self.gpx_data[poly_geom] = attributes
 
                 self.create_feature(
-                    poly_geom, self.gpx_data[self.gpx_data.keys()[0]]
+                    poly_geom, self.gpx_data[list(self.gpx_data.keys())[0]]
                 )
 
     def create_feature(self, gpx_geom, attributes):
@@ -404,7 +407,7 @@ class GpxToFeature(QObject):
         feature.setGeometry(gpx_geom)
 
         feature.setAttributes(
-            [ID_NUMBER] + attributes.values()
+            [ID_NUMBER] + list(attributes.values())
         )
 
         bounding_box = gpx_geom.boundingBox()
@@ -419,7 +422,7 @@ class GpxToFeature(QObject):
         if len(self.final_features) == 0:
             if self.error_type is not None:
                 text_in = QApplication.translate('GpxToFeature', 'in')
-                error_message = u'{} {} {}'.format(
+                error_message = '{} {} {}'.format(
                     self.error_type, text_in, self.gpx_file_name
                 )
                 self.progress.emit(error_message)
@@ -428,7 +431,7 @@ class GpxToFeature(QObject):
                 'GpxToFeature',
                 'Created feature(s) for'
             )
-            success_message = u'{} {}'.format(message, self.gpx_file_name)
+            success_message = '{} {}'.format(message, self.gpx_file_name)
             self.progress.emit(success_message)
 
     def validate_insufficient_points(self, geoms, point_counts):
@@ -436,7 +439,7 @@ class GpxToFeature(QObject):
         Validates for the presence of insufficient points when creating lines
         and polygons.
         :param geoms: The geometry to be validated.
-        :type geoms: QgsGeometry
+        :type geoms: list of QgsGeometry
         :param point_counts: The minimum number of points allowed to create
         a geometry. For line it is 2 and for polygon it is 3.
         :type point_counts: Integer
@@ -452,7 +455,7 @@ class GpxToFeature(QObject):
                     'GpxToFeature',
                     'Insufficient points to create a valid'
                 )
-                self.error_type = u'{} {}'.format(
+                self.error_type = '{} {}'.format(
                     error_type,
                     self.param_store.geometry_types[self.geometry_type])
                 error_state = False
@@ -482,7 +485,7 @@ class GpxToFeature(QObject):
             else:
                 if not suppress_errors:
                     error_desc = [er.what() for er in errors]
-                    self.error_type = u' '.join(error_desc)
+                    self.error_type = ' '.join(error_desc)
 
                 return False
         else:
@@ -592,7 +595,7 @@ class ProcessCombine(QObject):
                 if dir_path != parm_store.input_path:
                     continue
 
-            gpx_files = glob.glob(u'{0}/{1}*{2}.gpx'.format(
+            gpx_files = glob.glob('{0}/{1}*{2}.gpx'.format(
                 dir_path,
                 parm_store.file_name_prefix,
                 parm_store.file_name_suffix
@@ -611,8 +614,9 @@ class ProcessCombine(QObject):
                 parent_path = os.path.dirname(parm_store.input_path)
                 relative_path = os.path.relpath(gpx_path, parent_path)
                 scanning = QApplication.translate('ProcessCombine',
-                                                  u'Scanning')
-                text = u'{} {}'.format(scanning, relative_path)
+                                                  'Scanning')
+
+                text = '{} {}'.format(scanning, relative_path)
 
                 self.progress_dlg.setLabelText(text)
 
@@ -706,7 +710,7 @@ class ProcessCombine(QObject):
         e = QApplication.translate('ProcessCombine',
                                    'You can view the result in')
         g = QApplication.translate('ProcessCombine', 'layer.</b</html>')
-        end_text = u'{} {} {} {} {} {} {} {}'.format(
+        end_text = '{} {} {} {} {} {} {} {}'.format(
             a, number_of_features, c, self.number_of_gpx_files, d, e,
             parm_store.layer_name, g
         )
@@ -724,4 +728,5 @@ class ProcessCombine(QObject):
         for gpx_path in source_files:
             gpx_file = os.path.basename(gpx_path)
             destination = os.path.join(destination_folder, gpx_file)
+            QApplication.processEvents()
             shutil.copyfile(gpx_path, destination)

@@ -59,7 +59,7 @@ class BatchGpsImporter(object):
         Initializes the plugin GUI.
         """
         self.action = QAction(
-            QIcon(u'{}/images/batch.png'.format(PLUGIN_DIR)),
+            QIcon('{}/images/batch.png'.format(PLUGIN_DIR)),
             'Batch GPS Importer', self.iface.mainWindow()
         )
         self.action.setObjectName('gps_importer_action')
