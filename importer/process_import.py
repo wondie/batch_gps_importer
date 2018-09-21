@@ -215,7 +215,7 @@ class GpxToFeature(QObject):
             else:
                 return True
         except Exception as ex:
-            self.error_type = ex.message
+            self.error_type = str(ex)
 
     def gpx_to_point_list(self):
         """

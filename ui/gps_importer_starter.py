@@ -34,7 +34,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtWebKit import QWebSettings
 
-from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, \
+    QgsProject
 
 from .gps_importer import Ui_BatchGpsImporter
 from ..importer.process_import import (
@@ -60,6 +61,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.help_box_width = 206
         self.curr_help_box_width = 0  # the width of the help box before hiding
         self.setupUi(self)
+
         self.field_items = {}
         self.param_store = ParamStore()
         self.init_gui()
@@ -73,6 +75,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.input_projection_cbo.setCrs(
             QgsCoordinateReferenceSystem('EPSG:4326')
         )
+        # self.on_update_extent_box(True)
         self.waypoint.setProperty('name', 'waypoints')
         self.track.setProperty('name', 'tracks')
         self.route.setProperty('name', 'routes')
@@ -88,7 +91,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.rename_buttonbox()
         self.add_dynamic_help_button()
         self.hide_dynamic_help(on_load_hide=True)
-        self.hide_extent_buttons()
+        # self.hide_extent_buttons()
         self.tab_widget.removeTab(3)
         self.exclude_fields_view.setHeaderHidden(True)
         self.exclude_fields_view.setColumnWidth(0, 150)
@@ -289,7 +292,6 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         :type text: String
         """
         QApplication.processEvents()
-
         self.progress_text_edit.append(text)
 
     def on_prevent_collapse(self):
@@ -298,49 +300,51 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         """
         self.extent_box.setCollapsed(False)
 
-    def on_update_extent_box(self):
+    def on_update_extent_box(self, init=False):
         """
         A slot raised to automatically update the bounding box coordinates when
         the the map zoom level changes and when the extent box is enabled.
         :return:
         :rtype:
         """
-        if not self.extent_box.isChecked():
-            return
-        try:
-            canvas_extent = self.canvas.extent()
+        if not init:
+            if not self.extent_box.isChecked():
+                return
+        # try:
+        canvas_extent = self.canvas.extent()
 
-            transformer = QgsCoordinateTransform(
-                self.canvas.mapRenderer().destinationCrs(),
-                self.input_projection_cbo.crs()
-            )
+        transformer = QgsCoordinateTransform(
+            self.canvas.mapSettings().destinationCrs(),
+            self.input_projection_cbo.crs(),
+            QgsProject.instance()
+        )
 
-            transformer.setDestCRS(
-                self.input_projection_cbo.crs()
-            )
-            transformed_extent = transformer.transform(canvas_extent)
+        transformer.setDestinationCrs(
+            self.input_projection_cbo.crs()
+        )
+        transformed_extent = transformer.transform(canvas_extent)
 
-            self.extent_box.setOriginalExtent(
-                transformed_extent,
-                QgsCoordinateReferenceSystem(
-                    self.input_projection_cbo.crs().authid()
-                )
+        self.extent_box.setOriginalExtent(
+            transformed_extent,
+            QgsCoordinateReferenceSystem(
+                self.input_projection_cbo.crs().authid()
             )
+        )
 
-            self.extent_box.setOutputCrs(
-                QgsCoordinateReferenceSystem(
-                    self.input_projection_cbo.crs().authid()
-                )
+        self.extent_box.setOutputCrs(
+            QgsCoordinateReferenceSystem(
+                self.input_projection_cbo.crs().authid()
             )
-            self.extent_box.setOutputExtentFromOriginal()
-            self.extent_box.setCurrentExtent(
-                transformed_extent,
-                QgsCoordinateReferenceSystem(
-                    self.input_projection_cbo.crs().authid()
-                )
+        )
+        self.extent_box.setOutputExtentFromOriginal()
+        self.extent_box.setCurrentExtent(
+            transformed_extent,
+            QgsCoordinateReferenceSystem(
+                self.input_projection_cbo.crs().authid()
             )
-        except Exception as ex:
-            pass
+        )
+        # except Exception as ex:
+        #     pass
 
     def populate_geometry_type(self):
         """

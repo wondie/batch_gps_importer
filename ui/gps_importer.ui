@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>587</width>
-    <height>437</height>
+    <width>660</width>
+    <height>444</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -109,7 +109,7 @@
             </widget>
            </item>
            <item row="6" column="1" colspan="3">
-            <widget class="QgsProjectionSelectionWidget" name="input_projection_cbo" native="true">
+            <widget class="QgsProjectionSelectionWidget" name="input_projection_cbo">
              <property name="maximumSize">
               <size>
                <width>16777215</width>
@@ -204,18 +204,35 @@
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="6" column="1" colspan="2">
-            <widget class="QLineEdit" name="invalid_gpx_folder"/>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_5">
+           <item row="3" column="1">
+            <widget class="QRadioButton" name="exclude_with_errors_rbtn">
              <property name="text">
-              <string>Exclude with insufficient points</string>
+              <string>Yes</string>
              </property>
-             <property name="wordWrap">
-              <bool>true</bool>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="5" column="3">
+            <widget class="QPushButton" name="valid_folder_btn">
+             <property name="text">
+              <string>Browse...</string>
              </property>
             </widget>
+           </item>
+           <item row="4" column="2">
+            <widget class="QRadioButton" name="no_exclude_few_points">
+             <property name="text">
+              <string>No</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_2</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="5" column="1" colspan="2">
+            <widget class="QLineEdit" name="valid_gpx_folder"/>
            </item>
            <item row="6" column="3">
             <widget class="QPushButton" name="invalid_folder_btn">
@@ -224,10 +241,23 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="3">
-            <widget class="QPushButton" name="valid_folder_btn">
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_4">
              <property name="text">
-              <string>Browse...</string>
+              <string>Exclude with geometry error</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Exclude with insufficient points</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -248,15 +278,15 @@
              </attribute>
             </widget>
            </item>
-           <item row="4" column="2">
-            <widget class="QRadioButton" name="no_exclude_few_points">
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_7">
              <property name="text">
-              <string>No</string>
+              <string>Valid GPX folder</string>
              </property>
-             <attribute name="buttonGroup">
-              <string notr="true">buttonGroup_2</string>
-             </attribute>
             </widget>
+           </item>
+           <item row="6" column="1" colspan="2">
+            <widget class="QLineEdit" name="invalid_gpx_folder"/>
            </item>
            <item row="3" column="2">
             <widget class="QRadioButton" name="no_exclude_with_errors_rbtn">
@@ -268,79 +298,6 @@
              </attribute>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QRadioButton" name="exclude_with_errors_rbtn">
-             <property name="text">
-              <string>Yes</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">buttonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Exclude with geometry error</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1" colspan="2">
-            <widget class="QLineEdit" name="valid_gpx_folder"/>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>Valid GPX folder</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1" colspan="3">
-            <widget class="QgsExtentGroupBox" name="extent_box">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>150</height>
-              </size>
-             </property>
-             <property name="title">
-              <string>Map extent (current: none)</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-             </property>
-             <property name="flat">
-              <bool>false</bool>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-             <property name="collapsed" stdset="0">
-              <bool>false</bool>
-             </property>
-             <property name="syncGroup" stdset="0">
-              <string/>
-             </property>
-             <property name="scrollOnExpand" stdset="0">
-              <bool>false</bool>
-             </property>
-             <property name="saveCollapsedState" stdset="0">
-              <bool>false</bool>
-             </property>
-             <property name="saveCheckedState" stdset="0">
-              <bool>false</bool>
-             </property>
-             <property name="titleBase" stdset="0">
-              <string>Map extent</string>
-             </property>
-            </widget>
-           </item>
            <item row="2" column="0">
             <widget class="QLabel" name="label_9">
              <property name="text">
@@ -348,6 +305,19 @@
              </property>
              <property name="wordWrap">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" colspan="3">
+            <widget class="QgsExtentGroupBox" name="extent_box">
+             <property name="title">
+              <string>Map extent (current: none)</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -436,7 +406,7 @@
               <x>0</x>
               <y>0</y>
               <width>528</width>
-              <height>327</height>
+              <height>334</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -473,7 +443,7 @@
             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Batch GPS Importer&lt;/span&gt;&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;Version 1.0.0&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
@@ -505,7 +475,7 @@ p, li { white-space: pre-wrap; }
     </layout>
    </item>
    <item>
-    <widget class="QWebView" name="dynamic_help_box">
+    <widget class="QWebView" name="dynamic_help_box" native="true">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -515,24 +485,16 @@ p, li { white-space: pre-wrap; }
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="url">
+     <property name="url" stdset="0">
       <url>
        <string>about:blank</string>
       </url>
-     </property>
-     <property name="renderHints">
-      <set>QPainter::HighQualityAntialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
-  </customwidget>
   <customwidget>
    <class>QgsCollapsibleGroupBox</class>
    <extends>QGroupBox</extends>
@@ -549,6 +511,11 @@ p, li { white-space: pre-wrap; }
    <class>QgsProjectionSelectionWidget</class>
    <extends>QWidget</extends>
    <header>qgsprojectionselectionwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -587,7 +554,7 @@ p, li { white-space: pre-wrap; }
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
