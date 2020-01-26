@@ -128,13 +128,16 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         self.mousePressEvent = self.set_help_text
 
     def on_show_static_help(self):
+
         static_help = StaticHelp(self)
-        help_url = QUrl()
+
         help_path = os.path.join(STATIC_HELP, STATIC_HELP_FILE)
+
         if not os.path.isfile(help_path) and not os.path.isdir(STATIC_HELP):
             help_path = os.path.join(EN_HELP, STATIC_HELP_FILE)
-        help_url.setPath(help_path)
-        static_help.help_view.load(help_url)
+
+        url = QUrl.fromLocalFile(help_path)
+        static_help.help_view.load(url)
         static_help.show()
 
     def hide_extent_buttons(self):

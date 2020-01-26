@@ -1,5 +1,14 @@
 # Change Log
 All the major changes of the Batch GPS Importer is documented in this file.
+## [1.0.1] - 2020-01-26
+
+### Fixed
+- **Help**: Fixed help file not loading in the help window.
+
+## [1.0.0] - 2018-09-21
+
+### Changed
+- **Plugin**: Changed the Plugin Python version to Python 3.x and the QGIS to 3.x.
 
 
 ## [0.2.0] - 2017-06-27
