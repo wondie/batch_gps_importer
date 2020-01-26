@@ -5,7 +5,7 @@ author=Wondimagegn Tesfaye Beshah
 qgisMinimumVersion=3.0
 description=Batch GPS Importer is a GPX file import automation plugin that converts multiple GPX files into a single layer with multiple features based on the features in each gpx file.
 about=Batch GPS Importer is a GPX file import automation plugin that converts multiple GPX files into a single layer with multiple features based on features in each gpx file. Batch GPS Importer is developed and maintained by Wondimagegn Tesfaye Beshah. It is a free software under GNU General Public License.
-version=version 1.0.0
+version=version 1.0.1
 tracker=https://github.com/wondie/batch_gps_importer/issues
 repository=https://github.com/wondie/batch_gps_importer
 
