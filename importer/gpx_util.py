@@ -67,8 +67,7 @@ class GpxUtil():
             attribute = {}
             for i in range(child.length()):
                 n = child.item(i)
-                # print(n.nodeName(), n.toElement().text())
                 attribute[n.nodeName()] = n.toElement().text()
             point_attributes[point_row] = attribute
-        print (point_row, point_attributes)
+
         return point_attributes

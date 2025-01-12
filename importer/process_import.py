@@ -327,7 +327,7 @@ class GpxToFeature(QObject):
             current_attributes = self._point_attributes[point_row]
         else:
             current_attributes = OrderedDict()
-        print (current_attributes)
+
         QApplication.processEvents()
         for original_field, final_field in GPX_FIELDS.items():
             if final_field in self.excluded_fields:
