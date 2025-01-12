@@ -178,8 +178,8 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
 
         if not os.path.isfile(help_path) and not os.path.isdir(STATIC_HELP):
             help_path = '{}/{}.html'.format(EN_HELP, file_name)
-        help_url = QUrl()
-        help_url.setPath(help_path)
+        help_url = QUrl.fromLocalFile(help_path)
+
         self._help_anchor = anchor_text
         self._help_text = text
 
