@@ -266,12 +266,14 @@ class GpxToFeature(QObject):
 
             if qgs_geom is None:
                 continue
-            self._point_attributes = self.gpx_util.gpx_point_attributes(
-                self.feature_points[self.feature_type]
-            )
+
+            feature_name = self.feature_points[self.feature_type]
+            if self.geometry_type != 'Point':
+                feature_name = self.xml_feature_types[self.feature_type]
+
+            self._point_attributes = self.gpx_util.gpx_point_attributes(feature_name)
 
             if self.feature_type == 'waypoints':
-
                 field_attributes = self.extract_attributes(i)
                 point = qgs_geom.asMultiPoint()
                 self.gpx_data[point[0]] = field_attributes
@@ -280,13 +282,17 @@ class GpxToFeature(QObject):
                 # feature clear the gpx_data.
                 self.gpx_data.clear()
                 points = qgs_geom.asMultiPolyline()
+                if self.geometry_type == 'Point':
+                    for point_row, single_point in enumerate(points[0]):
 
-                for point_row, single_point in enumerate(points[0]):
+                        if STOP_IMPORT:
+                            return
 
-                    if STOP_IMPORT:
-                        return
-                    field_attributes = self.extract_attributes(point_row)
-                    self.gpx_data[single_point] = field_attributes
+                        field_attributes = self.extract_attributes(point_row)
+                        self.gpx_data[single_point] = field_attributes
+                else:
+                    field_attributes = self.extract_attributes(0)
+                    self.gpx_data[points[0][0]] = field_attributes
 
             if self.feature_type != 'waypoints':
                 self.create_polygon()
@@ -317,10 +323,11 @@ class GpxToFeature(QObject):
         :rtype: OrderedDict
         """
         field_attributes = OrderedDict()
-        if len(self._point_attributes) > 1:
+        if len(self._point_attributes) >= 1:
             current_attributes = self._point_attributes[point_row]
         else:
             current_attributes = OrderedDict()
+        print (current_attributes)
         QApplication.processEvents()
         for original_field, final_field in GPX_FIELDS.items():
             if final_field in self.excluded_fields:

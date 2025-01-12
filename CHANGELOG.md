@@ -1,5 +1,16 @@
-# Change Log
+﻿# Change Log
 All the major changes of the Batch GPS Importer is documented in this file.
+
+## [1.0.1] - 2025-01-26
+
+### Fixed
+- **Dynamic Help**: Dynamic help not showing contents fixed.
+- **Fields imported**: Fixed missing fields when importing.
+
+### Changed
+- **User Interface**: Change Projection to GPX Coordinate System, Geometry Type to Output Geometry Type, Layer Name to Output Layer Name.
+- **User Interface**: Reordered inputs 
+
 ## [1.0.1] - 2020-01-26
 
 ### Fixed
