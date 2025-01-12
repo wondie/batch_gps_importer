@@ -85,14 +85,15 @@ class ParamStore(object):
             'ParamStore', 'combined_gpx'
         )
         self.excluded_fields = []
+
+        line_str = QApplication.translate('ParamStore', 'Line')
         polygon_str = QApplication.translate('ParamStore', 'Polygon')
         point_str = QApplication.translate('ParamStore', 'Point')
-        line_str = QApplication.translate('ParamStore', 'Line')
 
         self.geometry_types = OrderedDict([
-            ('Polygon', polygon_str),
+            ('Linestring', line_str),
             ('Point', point_str),
-            ('Linestring', line_str)
+            ('Polygon', polygon_str)
         ])
 
         self.iface = None

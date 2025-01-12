@@ -353,7 +353,6 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         """
         Populate the geometry type combobox.
         """
-        self.geometry_type_cbo.addItem('', None)
         for key, value in self.param_store.geometry_types.items():
             self.geometry_type_cbo.addItem(value, key)
 
