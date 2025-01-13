@@ -404,7 +404,7 @@ class GpxToFeature(QObject):
         ID_NUMBER += 1
         values = []
         for attr_name, attr_value in attributes.items():
-            qgs_field, value = _create_field_and_value(attr_name, attr_value)
+            qgs_field, value = GpxToFeature._create_field_and_value(attr_name, attr_value)
             self.layer_fields.append(qgs_field)
             values.append(value)
         feature = QgsFeature()
@@ -520,6 +520,21 @@ class GpxToFeature(QObject):
                 return False
         else:
             return True
+
+    @staticmethod
+    def _create_field_and_value(attribute_name, attribute_value_as_str):
+        if attribute_name == GPX_FIELDS["time"]:
+            dt = QDateTime.fromString(attribute_value_as_str, Qt.ISODate)
+            field_value = dt if dt.isValid() else attribute_value_as_str
+            field_type = QVariant.DateTime
+        elif attribute_name == GPX_FIELDS["ele"]:
+            field_value = float(
+                attribute_value_as_str) if attribute_value_as_str is not None else attribute_value_as_str
+            field_type = QVariant.Double
+        else:
+            field_value = attribute_value_as_str
+            field_type = QVariant.String
+        return QgsField(attribute_name, field_type), field_value
 
 
 class ProcessCombine(QObject):
@@ -735,15 +750,4 @@ class ProcessCombine(QObject):
             shutil.copyfile(gpx_path, destination)
 
 
-def _create_field_and_value(attribute_name, attribute_value_as_str):
-    if attribute_name == GPX_FIELDS["time"]:
-        dt = QDateTime.fromString(attribute_value_as_str, Qt.ISODate)
-        field_value = dt if dt.isValid() else attribute_value_as_str
-        field_type = QVariant.DateTime
-    elif attribute_name == GPX_FIELDS["ele"]:
-        field_value = float(attribute_value_as_str) if attribute_value_as_str is not None else attribute_value_as_str
-        field_type = QVariant.Double
-    else:
-        field_value = attribute_value_as_str
-        field_type = QVariant.String
-    return QgsField(attribute_name, field_type), field_value
+
