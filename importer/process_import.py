@@ -741,7 +741,7 @@ def _create_field_and_value(attribute_name, attribute_value_as_str):
         field_value = dt if dt.isValid() else attribute_value_as_str
         field_type = QVariant.DateTime
     elif attribute_name == GPX_FIELDS["ele"]:
-        field_value = float(attribute_value_as_str)
+        field_value = float(attribute_value_as_str) if attribute_value_as_str is not None else attribute_value_as_str
         field_type = QVariant.Double
     else:
         field_value = attribute_value_as_str
