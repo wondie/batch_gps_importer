@@ -630,14 +630,17 @@ class ProcessCombine(QObject):
 
                 gpx_to_layer = GpxToFeature(parm_store)
                 gpx_to_layer.progress.connect(self.on_update_progress)
-                gpx_to_layer.init_gpx_import(gpx_path)
-                if not STOP_IMPORT:
-                    self.progress_dlg.setValue(i)
-                # fet layer fields once
-                if len(gpx_to_layer.final_features) > 0:
-                    if self.layer_fields is None:
-                        self.layer_fields = gpx_to_layer.layer_fields
-                    feature_list.extend(gpx_to_layer.final_features)
+                try:
+                    gpx_to_layer.init_gpx_import(gpx_path)
+                    if not STOP_IMPORT:
+                        self.progress_dlg.setValue(i)
+                    # fet layer fields once
+                    if len(gpx_to_layer.final_features) > 0:
+                        if self.layer_fields is None:
+                            self.layer_fields = gpx_to_layer.layer_fields
+                        feature_list.extend(gpx_to_layer.final_features)
+                except Exception as e:
+                    self.error_type = str(e)
 
         return feature_list
 
