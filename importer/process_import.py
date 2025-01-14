@@ -748,6 +748,3 @@ class ProcessCombine(QObject):
             destination = os.path.join(destination_folder, gpx_file)
             QApplication.processEvents()
             shutil.copyfile(gpx_path, destination)
-
-
-
