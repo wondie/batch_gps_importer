@@ -1,7 +1,7 @@
 ﻿# Change Log
-All the major changes of the Batch GPS Importer is documented in this file.
+All the major changes of the Batch GPS Importer are documented in this file.
 
-## [1.0.1] - 2025-01-26
+## [1.1.0] - 2025-01-26
 
 ### Fixed
 - **Dynamic Help**: Dynamic help not showing contents fixed.
@@ -9,7 +9,8 @@ All the major changes of the Batch GPS Importer is documented in this file.
 
 ### Changed
 - **User Interface**: Change Projection to GPX Coordinate System, Geometry Type to Output Geometry Type, Layer Name to Output Layer Name.
-- **User Interface**: Reordered inputs 
+- **User Interface**: Reordered inputs
+- **Fields imported**: Data types are now recognized as Double for elevation, QDateTime for date and String for the rest.
 
 ## [1.0.1] - 2020-01-26
 
