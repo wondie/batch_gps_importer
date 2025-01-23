@@ -22,7 +22,7 @@ import glob
 import shutil
 from collections import OrderedDict
 import os
-from PyQt5.QtCore import QObject, QVariant, pyqtSignal
+from PyQt5.QtCore import QObject, QVariant, pyqtSignal, QDateTime, Qt
 
 from PyQt5.QtWidgets import QApplication, QLabel, QProgressDialog
 
@@ -144,6 +144,7 @@ class GpxToFeature(QObject):
         self.file_name = None
         self.exclude_with_error = param_store.exclude_with_error
         self.extent_bound = param_store.extent_bound
+
 
         self.valid_gpx_folder = param_store.valid_gpx_folder
         self.invalid_gpx_folder = param_store.invalid_gpx_folder
@@ -409,13 +410,15 @@ class GpxToFeature(QObject):
         """
         global ID_NUMBER
         ID_NUMBER += 1
-        for field in attributes.keys():
-            self.layer_fields.append(QgsField(field, QVariant.String))
+        values = []
+        for attr_name, attr_value in attributes.items():
+            qgs_field, value = GpxToFeature._create_field_and_value(attr_name, attr_value)
+            self.layer_fields.append(qgs_field)
+            values.append(value)
         feature = QgsFeature()
         feature.setGeometry(gpx_geom)
-
         feature.setAttributes(
-            [ID_NUMBER] + list(attributes.values())
+            [ID_NUMBER] + values
         )
 
         bounding_box = gpx_geom.boundingBox()
@@ -525,6 +528,26 @@ class GpxToFeature(QObject):
                 return False
         else:
             return True
+
+    @staticmethod
+    def _create_field_and_value(attribute_name, attribute_value_as_str):
+        if attribute_name == GPX_FIELDS["time"]:
+            dt = QDateTime.fromString(attribute_value_as_str, Qt.ISODate)
+            if dt.isValid():
+                field_value = dt
+            else:
+                field_value = attribute_value_as_str
+            field_type = QVariant.DateTime
+        elif attribute_name == GPX_FIELDS["ele"]:
+            if attribute_value_as_str is not None:
+                field_value = float(attribute_value_as_str)
+            else:
+                field_value = attribute_value_as_str
+            field_type = QVariant.Double
+        else:
+            field_value = attribute_value_as_str
+            field_type = QVariant.String
+        return QgsField(attribute_name, field_type), field_value
 
 
 class ProcessCombine(QObject):
