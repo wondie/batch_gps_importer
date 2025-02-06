@@ -36,8 +36,7 @@ Batch GPS Importer a QGIS plugins that imports multiple GPX files as a layer in 
 
 Your contribution in translating the plugin to your languages is most welcomed!
 Translating the plugin and the documentation is very easy.
-To translate, please go to this website https://www.transifex.com/datumhelper/batch-gps-importer/ and
-click on the button **Help Translate "Batch GPS Importer"** Then register if you are not a member.
+To translate, please create an issue on GitHub.
 
 ### Documentation ###
 
