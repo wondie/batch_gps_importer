@@ -1,2 +1,3 @@
 The following are contributors of this project:
 - Wondimagegn Tesfaye Beshah - wondim81@gmail.com
+- Samuel Meuli

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>660</width>
-    <height>444</height>
+    <height>448</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,23 +37,76 @@
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <layout class="QGridLayout" name="gridLayout">
+           <property name="leftMargin">
+            <number>6</number>
+           </property>
+           <property name="topMargin">
+            <number>6</number>
+           </property>
+           <property name="rightMargin">
+            <number>6</number>
+           </property>
+           <property name="bottomMargin">
+            <number>6</number>
+           </property>
            <property name="verticalSpacing">
             <number>29</number>
            </property>
-           <item row="6" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>Projection</string>
+           <item row="1" column="3">
+            <widget class="QLineEdit" name="file_name_suffix">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
             </widget>
            </item>
-           <item row="0" column="1" colspan="2">
-            <widget class="QLineEdit" name="input_gpx_folder"/>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
+           <item row="2" column="2">
+            <widget class="QRadioButton" name="no_scan_sub_folders_rbtn">
              <property name="text">
-              <string>GPX folder</string>
+              <string>No</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="file_name_prefix">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1" colspan="3">
+            <widget class="QLineEdit" name="layer_name_edit">
+             <property name="maxLength">
+              <number>50</number>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QLabel" name="suffix_label">
+             <property name="text">
+              <string>File name suffix</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1" colspan="3">
+            <widget class="QComboBox" name="geometry_type_cbo"/>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>GPX coordinate system</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="prefix_label">
+             <property name="text">
+              <string>File name prefix</string>
              </property>
             </widget>
            </item>
@@ -67,34 +120,10 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="3">
-            <widget class="QPushButton" name="input_gpx_file_btn">
-             <property name="text">
-              <string>Browse...</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>Scan sub-folders</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1" colspan="3">
-            <widget class="QComboBox" name="geometry_type_cbo"/>
-           </item>
            <item row="5" column="0">
-            <widget class="QLabel" name="label_11">
+            <widget class="QLabel" name="label_8">
              <property name="text">
-              <string>Geometry type</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QRadioButton" name="no_scan_sub_folders_rbtn">
-             <property name="text">
-              <string>No</string>
+              <string>Output layer name</string>
              </property>
             </widget>
            </item>
@@ -108,13 +137,10 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="1" colspan="3">
-            <widget class="QgsProjectionSelectionWidget" name="input_projection_cbo" native="true">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>23</height>
-              </size>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="input_gpx_file_btn">
+             <property name="text">
+              <string>Browse...</string>
              </property>
             </widget>
            </item>
@@ -128,10 +154,34 @@
              </property>
             </widget>
            </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Scan sub-folders</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>Output geometry type</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="2">
+            <widget class="QLineEdit" name="input_gpx_folder"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>GPX folder</string>
+             </property>
+            </widget>
+           </item>
            <item row="3" column="0">
             <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>GPX Format</string>
+              <string>GPX format</string>
              </property>
             </widget>
            </item>
@@ -146,50 +196,12 @@
             </widget>
            </item>
            <item row="4" column="1" colspan="3">
-            <widget class="QLineEdit" name="layer_name_edit">
-             <property name="maxLength">
-              <number>50</number>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>Layer name</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="prefix_label">
-             <property name="text">
-              <string>File name prefix</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QLabel" name="suffix_label">
-             <property name="text">
-              <string>File name suffix</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="file_name_prefix">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QLineEdit" name="file_name_suffix">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+            <widget class="QgsProjectionSelectionWidget" name="input_projection_cbo">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>23</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -204,54 +216,19 @@
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="3" column="1">
-            <widget class="QRadioButton" name="exclude_with_errors_rbtn">
-             <property name="text">
-              <string>Yes</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">buttonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="5" column="3">
-            <widget class="QPushButton" name="valid_folder_btn">
-             <property name="text">
-              <string>Browse...</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="2">
-            <widget class="QRadioButton" name="no_exclude_few_points">
-             <property name="text">
-              <string>No</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">buttonGroup_2</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="5" column="1" colspan="2">
-            <widget class="QLineEdit" name="valid_gpx_folder"/>
-           </item>
-           <item row="6" column="3">
-            <widget class="QPushButton" name="invalid_folder_btn">
-             <property name="text">
-              <string>Browse...</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Exclude with geometry error</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
+           <property name="leftMargin">
+            <number>6</number>
+           </property>
+           <property name="topMargin">
+            <number>6</number>
+           </property>
+           <property name="rightMargin">
+            <number>6</number>
+           </property>
+           <property name="bottomMargin">
+            <number>6</number>
+           </property>
+           <item row="6" column="0">
             <widget class="QLabel" name="label_5">
              <property name="text">
               <string>Exclude with insufficient points</string>
@@ -261,34 +238,28 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
+           <item row="8" column="0">
             <widget class="QLabel" name="label_10">
              <property name="text">
               <string>Invalid GPX folder</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <widget class="QRadioButton" name="exclude_with_few_points">
+           <item row="7" column="4">
+            <widget class="QPushButton" name="valid_folder_btn">
              <property name="text">
-              <string>Yes</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">buttonGroup_2</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>Valid GPX folder</string>
+              <string>Browse...</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="1" colspan="2">
-            <widget class="QLineEdit" name="invalid_gpx_folder"/>
+           <item row="8" column="4">
+            <widget class="QPushButton" name="invalid_folder_btn">
+             <property name="text">
+              <string>Browse...</string>
+             </property>
+            </widget>
            </item>
-           <item row="3" column="2">
+           <item row="5" column="2">
             <widget class="QRadioButton" name="no_exclude_with_errors_rbtn">
              <property name="text">
               <string>No</string>
@@ -298,7 +269,10 @@
              </attribute>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="7" column="1" colspan="2">
+            <widget class="QLineEdit" name="valid_gpx_folder"/>
+           </item>
+           <item row="3" column="0">
             <widget class="QLabel" name="label_9">
              <property name="text">
               <string>Exclude outside extent</string>
@@ -308,10 +282,30 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1" colspan="3">
+           <item row="8" column="1" colspan="2">
+            <widget class="QLineEdit" name="invalid_gpx_folder"/>
+           </item>
+           <item row="6" column="1">
+            <widget class="QRadioButton" name="exclude_with_few_points">
+             <property name="text">
+              <string>Yes</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_2</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>Valid GPX folder</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1" colspan="4">
             <widget class="QgsExtentGroupBox" name="extent_box">
              <property name="title">
-              <string>Map extent (current: none)</string>
+              <string>Extent (current: none)</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -320,6 +314,49 @@
               <bool>false</bool>
              </property>
             </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Exclude with geometry error</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="QRadioButton" name="no_exclude_few_points">
+             <property name="text">
+              <string>No</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_2</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QRadioButton" name="exclude_with_errors_rbtn">
+             <property name="text">
+              <string>Yes</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="9" column="4">
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -332,6 +369,18 @@
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
           <layout class="QGridLayout" name="gridLayout_3">
+           <property name="leftMargin">
+            <number>6</number>
+           </property>
+           <property name="topMargin">
+            <number>6</number>
+           </property>
+           <property name="rightMargin">
+            <number>6</number>
+           </property>
+           <property name="bottomMargin">
+            <number>6</number>
+           </property>
            <item row="0" column="0">
             <widget class="QLabel" name="label_12">
              <property name="text">
@@ -405,8 +454,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>109</width>
-              <height>109</height>
+              <width>601</width>
+              <height>338</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -443,7 +492,7 @@
             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Batch GPS Importer&lt;/span&gt;&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;Version 1.0.1&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
@@ -475,7 +524,7 @@ p, li { white-space: pre-wrap; }
     </layout>
    </item>
    <item>
-    <widget class="QWebView" name="dynamic_help_box">
+    <widget class="QWebView" name="dynamic_help_box" native="true">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -485,7 +534,7 @@ p, li { white-space: pre-wrap; }
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="url">
+     <property name="url" stdset="0">
       <url>
        <string>about:blank</string>
       </url>
@@ -495,11 +544,6 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
-  </customwidget>
   <customwidget>
    <class>QgsCollapsibleGroupBox</class>
    <extends>QGroupBox</extends>
@@ -516,6 +560,11 @@ p, li { white-space: pre-wrap; }
    <class>QgsProjectionSelectionWidget</class>
    <extends>QWidget</extends>
    <header>qgsprojectionselectionwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
   </customwidget>
  </customwidgets>
  <resources/>

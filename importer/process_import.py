@@ -22,7 +22,7 @@ import glob
 import shutil
 from collections import OrderedDict
 import os
-from PyQt5.QtCore import QObject, QVariant, pyqtSignal
+from PyQt5.QtCore import QObject, QVariant, pyqtSignal, QDateTime, Qt
 
 from PyQt5.QtWidgets import QApplication, QLabel, QProgressDialog
 
@@ -85,14 +85,15 @@ class ParamStore(object):
             'ParamStore', 'combined_gpx'
         )
         self.excluded_fields = []
+
+        line_str = QApplication.translate('ParamStore', 'Line')
         polygon_str = QApplication.translate('ParamStore', 'Polygon')
         point_str = QApplication.translate('ParamStore', 'Point')
-        line_str = QApplication.translate('ParamStore', 'Line')
 
         self.geometry_types = OrderedDict([
-            ('Polygon', polygon_str),
+            ('Linestring', line_str),
             ('Point', point_str),
-            ('Linestring', line_str)
+            ('Polygon', polygon_str)
         ])
 
         self.iface = None
@@ -143,6 +144,7 @@ class GpxToFeature(QObject):
         self.file_name = None
         self.exclude_with_error = param_store.exclude_with_error
         self.extent_bound = param_store.extent_bound
+
 
         self.valid_gpx_folder = param_store.valid_gpx_folder
         self.invalid_gpx_folder = param_store.invalid_gpx_folder
@@ -265,12 +267,14 @@ class GpxToFeature(QObject):
 
             if qgs_geom is None:
                 continue
-            self._point_attributes = self.gpx_util.gpx_point_attributes(
-                self.feature_points[self.feature_type]
-            )
+
+            feature_name = self.feature_points[self.feature_type]
+            if self.geometry_type != 'Point':
+                feature_name = self.xml_feature_types[self.feature_type]
+
+            self._point_attributes = self.gpx_util.gpx_point_attributes(feature_name)
 
             if self.feature_type == 'waypoints':
-
                 field_attributes = self.extract_attributes(i)
                 point = qgs_geom.asMultiPoint()
                 self.gpx_data[point[0]] = field_attributes
@@ -279,13 +283,17 @@ class GpxToFeature(QObject):
                 # feature clear the gpx_data.
                 self.gpx_data.clear()
                 points = qgs_geom.asMultiPolyline()
+                if self.geometry_type == 'Point':
+                    for point_row, single_point in enumerate(points[0]):
 
-                for point_row, single_point in enumerate(points[0]):
+                        if STOP_IMPORT:
+                            return
 
-                    if STOP_IMPORT:
-                        return
-                    field_attributes = self.extract_attributes(point_row)
-                    self.gpx_data[single_point] = field_attributes
+                        field_attributes = self.extract_attributes(point_row)
+                        self.gpx_data[single_point] = field_attributes
+                else:
+                    field_attributes = self.extract_attributes(0)
+                    self.gpx_data[points[0][0]] = field_attributes
 
             if self.feature_type != 'waypoints':
                 self.create_polygon()
@@ -316,10 +324,11 @@ class GpxToFeature(QObject):
         :rtype: OrderedDict
         """
         field_attributes = OrderedDict()
-        if len(self._point_attributes) > 1:
+        if len(self._point_attributes) >= 1:
             current_attributes = self._point_attributes[point_row]
         else:
             current_attributes = OrderedDict()
+
         QApplication.processEvents()
         for original_field, final_field in GPX_FIELDS.items():
             if final_field in self.excluded_fields:
@@ -401,13 +410,15 @@ class GpxToFeature(QObject):
         """
         global ID_NUMBER
         ID_NUMBER += 1
-        for field in attributes.keys():
-            self.layer_fields.append(QgsField(field, QVariant.String))
+        values = []
+        for attr_name, attr_value in attributes.items():
+            qgs_field, value = GpxToFeature._create_field_and_value(attr_name, attr_value)
+            self.layer_fields.append(qgs_field)
+            values.append(value)
         feature = QgsFeature()
         feature.setGeometry(gpx_geom)
-
         feature.setAttributes(
-            [ID_NUMBER] + list(attributes.values())
+            [ID_NUMBER] + values
         )
 
         bounding_box = gpx_geom.boundingBox()
@@ -518,6 +529,26 @@ class GpxToFeature(QObject):
         else:
             return True
 
+    @staticmethod
+    def _create_field_and_value(attribute_name, attribute_value_as_str):
+        if attribute_name == GPX_FIELDS["time"]:
+            dt = QDateTime.fromString(attribute_value_as_str, Qt.ISODate)
+            if dt.isValid():
+                field_value = dt
+            else:
+                field_value = attribute_value_as_str
+            field_type = QVariant.DateTime
+        elif attribute_name == GPX_FIELDS["ele"]:
+            if attribute_value_as_str is not None:
+                field_value = float(attribute_value_as_str)
+            else:
+                field_value = attribute_value_as_str
+            field_type = QVariant.Double
+        else:
+            field_value = attribute_value_as_str
+            field_type = QVariant.String
+        return QgsField(attribute_name, field_type), field_value
+
 
 class ProcessCombine(QObject):
     """
@@ -622,14 +653,17 @@ class ProcessCombine(QObject):
 
                 gpx_to_layer = GpxToFeature(parm_store)
                 gpx_to_layer.progress.connect(self.on_update_progress)
-                gpx_to_layer.init_gpx_import(gpx_path)
-                if not STOP_IMPORT:
-                    self.progress_dlg.setValue(i)
-                # fet layer fields once
-                if len(gpx_to_layer.final_features) > 0:
-                    if self.layer_fields is None:
-                        self.layer_fields = gpx_to_layer.layer_fields
-                    feature_list.extend(gpx_to_layer.final_features)
+                try:
+                    gpx_to_layer.init_gpx_import(gpx_path)
+                    if not STOP_IMPORT:
+                        self.progress_dlg.setValue(i)
+                    # fet layer fields once
+                    if len(gpx_to_layer.final_features) > 0:
+                        if self.layer_fields is None:
+                            self.layer_fields = gpx_to_layer.layer_fields
+                        feature_list.extend(gpx_to_layer.final_features)
+                except Exception as e:
+                    self.error_type = str(e)
 
         return feature_list
 

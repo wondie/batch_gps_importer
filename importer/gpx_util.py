@@ -60,13 +60,13 @@ class GpxUtil():
         node_list = self.find_gpx_node(gpx_feature_name)
         point_attributes = OrderedDict()
         QApplication.processEvents()
+
         for point_row, nod in enumerate(node_list):
             child = nod.childNodes()
 
             attribute = {}
             for i in range(child.length()):
                 n = child.item(i)
-                n.nodeName(), n.toElement().text()
                 attribute[n.nodeName()] = n.toElement().text()
             point_attributes[point_row] = attribute
 
