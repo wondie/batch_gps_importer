@@ -295,7 +295,6 @@ class GpxToFeature(QObject):
                         self.gpx_data[single_point] = field_attributes
                 else:
                     field_attributes = self.extract_attributes(0)
-                    # print (points[0])
                     self.line_polygon_points[points[0][0]] = points[0]
                     self.gpx_data[points[0][0]] = field_attributes
 
