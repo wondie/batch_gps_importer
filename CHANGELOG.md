@@ -1,6 +1,11 @@
 ﻿# Change Log
 All the major changes of the Batch GPS Importer are documented in this file.
 
+## [1.1.1] - 02/15/2025
+
+### Fixed
+- **Geometry imported**: Fixed Polygon and Line output geometry not showing.
+
 ## [1.1.0] - 2025-01-26
 
 ### Fixed
