@@ -155,6 +155,7 @@ class GpxToFeature(QObject):
         self.error_type = None
         self.ogr_layer = None
         self.gpx_data = OrderedDict()
+        self.line_polygon_points = OrderedDict()
         self.valid_gpx_files = []
         self.invalid_gpx_files = []
         self._point_attributes = OrderedDict()
@@ -283,6 +284,7 @@ class GpxToFeature(QObject):
                 # feature clear the gpx_data.
                 self.gpx_data.clear()
                 points = qgs_geom.asMultiPolyline()
+
                 if self.geometry_type == 'Point':
                     for point_row, single_point in enumerate(points[0]):
 
@@ -293,7 +295,9 @@ class GpxToFeature(QObject):
                         self.gpx_data[single_point] = field_attributes
                 else:
                     field_attributes = self.extract_attributes(0)
+                    self.line_polygon_points[points[0][0]] = points[0]
                     self.gpx_data[points[0][0]] = field_attributes
+
 
             if self.feature_type != 'waypoints':
                 self.create_polygon()
@@ -318,7 +322,7 @@ class GpxToFeature(QObject):
     def extract_attributes(self, point_row=0):
         """
         Extracts the attributes of a feature.
-        :param point_row: The point row a vertex
+        :param point_row: The point row of a vertex
         :type point_row: Integer
         :return: Dictionary of fields and attributes as key and value.
         :rtype: OrderedDict
@@ -350,7 +354,7 @@ class GpxToFeature(QObject):
         Creates a line feature.
         """
         if self.geometry_type == 'Linestring':
-            line_geom = QgsGeometry.fromPolylineXY(self.gpx_data.keys())
+            line_geom = QgsGeometry.fromPolylineXY(list(self.line_polygon_points.values())[0])
             attributes = list(self.gpx_data.values())[0]
             # validate_insufficient_points
             if not self.validate_insufficient_points(self.gpx_data.keys(), 2):
@@ -385,7 +389,7 @@ class GpxToFeature(QObject):
         Creates a polygon feature.
         """
         if self.geometry_type == 'Polygon':
-            poly_geom = QgsGeometry.fromPolygonXY([list(self.gpx_data.keys())])
+            poly_geom = QgsGeometry.fromPolygonXY([list(self.line_polygon_points.values())[0]])
             attributes = list(self.gpx_data.values())[0]
             # update the gpx_data to contain polygon geometry as a key and
             # and only the first attributes
