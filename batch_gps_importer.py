@@ -18,10 +18,10 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt5.QtCore import QSettings, QFileInfo, QTranslator, qVersion, \
+from qgis.PyQt.QtCore import QSettings, QFileInfo, QTranslator, qVersion, \
     QCoreApplication
-from PyQt5.QtWidgets import QAction
-from PyQt5.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtGui import QIcon
 
 from .ui.gps_importer_starter import GpsImporter
 from . import PLUGIN_DIR

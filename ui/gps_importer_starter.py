@@ -19,9 +19,9 @@
  ***************************************************************************/
 """
 import os.path
-from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtGui import QCursor, QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import (
+from qgis.PyQt.QtCore import QUrl, Qt
+from qgis.PyQt.QtGui import QCursor, QStandardItem, QStandardItemModel
+from qgis.PyQt.QtWidgets import (
     QApplication,
     QCheckBox,
 
@@ -32,7 +32,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QMessageBox
 )
-from PyQt5.QtWebKit import QWebSettings
+from qgis.PyQt.QtWebEngineCore import QWebEngineSettings
 
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, \
     QgsProject
@@ -185,7 +185,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
 
         # allow JavaScript to run
         self.dynamic_help_box.page().settings().testAttribute(
-            QWebSettings.JavascriptEnabled
+            QWebEngineSettings.WebAttribute.JavascriptEnabled
         )
         self.dynamic_help_box.load(help_url)
 
@@ -200,9 +200,8 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
             if self._help_anchor == '':
                 return
 
-            self.dynamic_help_box.page().mainFrame().scrollToAnchor(
-                self._help_anchor
-            )
+
+            self.dynamic_help_box.page().runJavaScript(f"document.getElementById('{self._help_anchor}').scrollIntoView()")
 
     def add_dynamic_help_button(self):
         """
@@ -214,7 +213,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
             )
         )
         self.buttonBox.addButton(
-            self.dynamic_help_btn, QDialogButtonBox.ActionRole
+            self.dynamic_help_btn, QDialogButtonBox.ButtonRole.ActionRole
         )
 
     def hide_dynamic_help(self, on_load_hide=False):
@@ -285,8 +284,8 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         exit_txt = QApplication.translate(
             'GpsImporter', 'Exit'
         )
-        self.buttonBox.button(QDialogButtonBox.Ok).setText(import_txt)
-        self.buttonBox.button(QDialogButtonBox.Cancel).setText(exit_txt)
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setText(import_txt)
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setText(exit_txt)
 
     def on_update_progress(self, text):
         """
@@ -366,7 +365,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         half_count = int(field_count/2)
         for i, item_text in enumerate(GPX_FIELDS.values()):
             item = QStandardItem(item_text)
-            item.setCheckState(2)
+            item.setCheckState(Qt.CheckState.Checked)
             item.setCheckable(True)
             if i >= half_count:
                 model.setItem(i-half_count, 1, item)
@@ -387,13 +386,13 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         """
         for text, column in self.field_items.items():
             items = self.exclude_fields_view.model().findItems(
-                text, Qt.MatchExactly, column
+                text, Qt.MatchFlag.MatchExactly, column
             )
             for item in items:
                 if self.exclude_fields_groupbox.isChecked():
-                    item.setCheckState(Qt.Checked)
+                    item.setCheckState(Qt.CheckState.Checked)
                 else:
-                    item.setCheckState(Qt.Unchecked)
+                    item.setCheckState(Qt.CheckState.Unchecked)
 
     def on_fields_toggled(self, item):
         """
@@ -403,7 +402,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
         :param item: The field item
         :type item: QStandardItem
         """
-        if item.checkState() == Qt.Unchecked:
+        if item.checkState() == Qt.CheckState.Unchecked:
             self.excluded_fields.append(item.text())
         else:
             self.excluded_fields.remove(item.text())
@@ -423,7 +422,7 @@ class GpsImporter(QDialog, Ui_BatchGpsImporter):
             self.iface.mainWindow(),
             title,
             last_path,
-            QFileDialog.ShowDirsOnly
+            QFileDialog.Option.ShowDirsOnly
         )
         if len(path) > 0:
             line_edit.setText(path)

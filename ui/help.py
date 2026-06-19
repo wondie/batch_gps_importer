@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qgis.PyQt import QtCore, QtGui, QtWidgets
 
 class Ui_StaticHelp(object):
     def setupUi(self, StaticHelp):
@@ -14,13 +14,13 @@ class Ui_StaticHelp(object):
         StaticHelp.resize(698, 595)
         self.verticalLayout = QtWidgets.QVBoxLayout(StaticHelp)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.help_view = QtWebKitWidgets.QWebView(StaticHelp)
+        self.help_view = QtWebEngineWidgets.QWebEngineView(StaticHelp)
         self.help_view.setUrl(QtCore.QUrl("about:blank"))
         self.help_view.setObjectName("help_view")
         self.verticalLayout.addWidget(self.help_view)
         self.buttonBox = QtWidgets.QDialogButtonBox(StaticHelp)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Close)
+        self.buttonBox.setOrientation(QtCore.Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.StandardButton.Close)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
 
@@ -33,4 +33,4 @@ class Ui_StaticHelp(object):
         _translate = QtCore.QCoreApplication.translate
         StaticHelp.setWindowTitle(_translate("StaticHelp", "Batch GPS Importer"))
 
-from PyQt5 import QtWebKitWidgets
+from qgis.PyQt import QtWebEngineWidgets

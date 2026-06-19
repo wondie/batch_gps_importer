@@ -22,9 +22,9 @@ import glob
 import shutil
 from collections import OrderedDict
 import os
-from PyQt5.QtCore import QObject, QVariant, pyqtSignal, QDateTime, Qt
+from qgis.PyQt.QtCore import QObject, QVariant, pyqtSignal, QDateTime, Qt
 
-from PyQt5.QtWidgets import QApplication, QLabel, QProgressDialog
+from qgis.PyQt.QtWidgets import QApplication, QLabel, QProgressDialog
 
 from qgis.core import (
     QgsGeometry,
@@ -536,7 +536,7 @@ class GpxToFeature(QObject):
     @staticmethod
     def _create_field_and_value(attribute_name, attribute_value_as_str):
         if attribute_name == GPX_FIELDS["time"]:
-            dt = QDateTime.fromString(attribute_value_as_str, Qt.ISODate)
+            dt = QDateTime.fromString(attribute_value_as_str, Qt.DateFormat.ISODate)
             if dt.isValid():
                 field_value = dt
             else:

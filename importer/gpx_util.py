@@ -1,7 +1,7 @@
 from collections import OrderedDict
-from PyQt5.QtCore import QFile
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtXml import QDomDocument
+from qgis.PyQt.QtCore import QFile
+from qgis.PyQt.QtWidgets import QApplication
+from qgis.PyQt.QtXml import QDomDocument
 
 class GpxUtil():
 
