@@ -1,6 +1,11 @@
 ﻿# Change Log
 All the major changes of the Batch GPS Importer are documented in this file.
 
+## [2.0.0] - 07/19/2026
+
+### Changed
+- **Bumped Qt version to 6**: Fixed compatibility issue with QGIS 4 by updating Qt version to 6.
+
 ## [1.1.1] - 02/15/2025
 
 ### Fixed
