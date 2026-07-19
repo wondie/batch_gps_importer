@@ -18,7 +18,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt5.QtWidgets import QDialog
+from qgis.PyQt.QtWidgets import QDialog
 
 from .help import Ui_StaticHelp
 STATIC_HELP_FILE = 'help.html'
